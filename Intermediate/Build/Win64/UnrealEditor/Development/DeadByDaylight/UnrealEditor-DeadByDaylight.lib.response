@@ -1,0 +1,15 @@
+/NOLOGO
+/errorReport:prompt
+/MACHINE:x64
+/SUBSYSTEM:WINDOWS
+/DEF
+/NAME:"UnrealEditor-DeadByDaylight.dll"
+/IGNORE:4221
+/NODEFAULTLIB
+"C:\Users\wlsry\Desktop\Study\Unreal Projects\DeadByDaylight\Intermediate\Build\Win64\DeadByDaylightEditor\Development\Engine\SharedPCH.Engine.ShadowErrors.h.obj"
+"C:\Users\wlsry\Desktop\Study\Unreal Projects\DeadByDaylight\Intermediate\Build\Win64\UnrealEditor\Development\DeadByDaylight\DeadByDaylight.cpp.obj"
+"C:\Users\wlsry\Desktop\Study\Unreal Projects\DeadByDaylight\Intermediate\Build\Win64\UnrealEditor\Development\DeadByDaylight\Survivor.cpp.obj"
+"C:\Users\wlsry\Desktop\Study\Unreal Projects\DeadByDaylight\Intermediate\Build\Win64\UnrealEditor\Development\DeadByDaylight\DeadByDaylight.init.gen.cpp.obj"
+"C:\Users\wlsry\Desktop\Study\Unreal Projects\DeadByDaylight\Intermediate\Build\Win64\UnrealEditor\Development\DeadByDaylight\Survivor.gen.cpp.obj"
+"C:\Users\wlsry\Desktop\Study\Unreal Projects\DeadByDaylight\Intermediate\Build\Win64\UnrealEditor\Development\DeadByDaylight\Default.rc2.res"
+/OUT:"C:\Users\wlsry\Desktop\Study\Unreal Projects\DeadByDaylight\Intermediate\Build\Win64\UnrealEditor\Development\DeadByDaylight\UnrealEditor-DeadByDaylight.lib"

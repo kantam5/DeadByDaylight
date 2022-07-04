@@ -1,0 +1,14 @@
+{
+	"Targets": [
+		{
+			"Name": "DeadByDaylight",
+			"Path": "C:\\Users\\wlsry\\Desktop\\Study\\Unreal Projects\\DeadByDaylight\\Source\\DeadByDaylight.Target.cs",
+			"Type": "Game"
+		},
+		{
+			"Name": "DeadByDaylightEditor",
+			"Path": "C:\\Users\\wlsry\\Desktop\\Study\\Unreal Projects\\DeadByDaylight\\Source\\DeadByDaylightEditor.Target.cs",
+			"Type": "Editor"
+		}
+	]
+}

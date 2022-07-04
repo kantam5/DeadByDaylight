@@ -1,0 +1,14 @@
+{
+    "Version": "1.1",
+    "Data": {
+        "Source": "c:\\users\\wlsry\\desktop\\study\\unreal projects\\deadbydaylight\\source\\deadbydaylight\\deadbydaylight.cpp",
+        "ProvidedModule": "",
+        "PCH": "c:\\users\\wlsry\\desktop\\study\\unreal projects\\deadbydaylight\\intermediate\\build\\win64\\deadbydaylighteditor\\development\\engine\\sharedpch.engine.shadowerrors.h.pch",
+        "Includes": [
+            "c:\\users\\wlsry\\desktop\\study\\unreal projects\\deadbydaylight\\intermediate\\build\\win64\\unrealeditor\\development\\deadbydaylight\\definitions.deadbydaylight.h",
+            "c:\\users\\wlsry\\desktop\\study\\unreal projects\\deadbydaylight\\source\\deadbydaylight\\deadbydaylight.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}

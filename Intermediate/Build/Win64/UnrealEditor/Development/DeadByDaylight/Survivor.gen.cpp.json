@@ -1,0 +1,21 @@
+{
+    "Version": "1.1",
+    "Data": {
+        "Source": "c:\\users\\wlsry\\desktop\\study\\unreal projects\\deadbydaylight\\intermediate\\build\\win64\\unrealeditor\\inc\\deadbydaylight\\survivor.gen.cpp",
+        "ProvidedModule": "",
+        "PCH": "c:\\users\\wlsry\\desktop\\study\\unreal projects\\deadbydaylight\\intermediate\\build\\win64\\deadbydaylighteditor\\development\\engine\\sharedpch.engine.shadowerrors.h.pch",
+        "Includes": [
+            "c:\\users\\wlsry\\desktop\\study\\unreal projects\\deadbydaylight\\intermediate\\build\\win64\\unrealeditor\\development\\deadbydaylight\\definitions.deadbydaylight.h",
+            "c:\\users\\wlsry\\desktop\\study\\unreal projects\\deadbydaylight\\source\\deadbydaylight\\survivor.h",
+            "c:\\program files\\epic games\\ue_5.0\\engine\\source\\runtime\\engine\\classes\\gameframework\\character.h",
+            "c:\\program files\\epic games\\ue_5.0\\engine\\source\\runtime\\engine\\classes\\gameframework\\charactermovementreplication.h",
+            "c:\\program files\\epic games\\ue_5.0\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\charactermovementreplication.generated.h",
+            "c:\\program files\\epic games\\ue_5.0\\engine\\source\\runtime\\engine\\classes\\gameframework\\rootmotionsource.h",
+            "c:\\program files\\epic games\\ue_5.0\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\rootmotionsource.generated.h",
+            "c:\\program files\\epic games\\ue_5.0\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\character.generated.h",
+            "c:\\users\\wlsry\\desktop\\study\\unreal projects\\deadbydaylight\\intermediate\\build\\win64\\unrealeditor\\inc\\deadbydaylight\\survivor.generated.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}
