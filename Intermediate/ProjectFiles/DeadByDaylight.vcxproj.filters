@@ -11,6 +11,9 @@
     <None Include="..\..\Source\DeadByDaylightEditor.Target.cs">
       <Filter>Source</Filter>
     </None>
+    <None Include="..\..\.gitattributes" />
+    <None Include="..\..\.gitignore" />
+    <None Include="..\..\SURVIVOR.ipch" />
     <Filter Include="Config">
       <UniqueIdentifier>{FA535FFB-25E1-3D20-B416-52F9BE21E06E}</UniqueIdentifier>
     </Filter>
@@ -21,6 +24,9 @@
       <Filter>Config</Filter>
     </None>
     <None Include="..\..\Config\DefaultGame.ini">
+      <Filter>Config</Filter>
+    </None>
+    <None Include="..\..\Config\DefaultInput.ini">
       <Filter>Config</Filter>
     </None>
     <Filter Include="Config\HoloLens">
@@ -39,6 +45,12 @@
       <Filter>Source\DeadByDaylight</Filter>
     </ClCompile>
     <ClInclude Include="..\..\Source\DeadByDaylight\DeadByDaylight.h">
+      <Filter>Source\DeadByDaylight</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\DeadByDaylight\Generator.cpp">
+      <Filter>Source\DeadByDaylight</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\DeadByDaylight\Generator.h">
       <Filter>Source\DeadByDaylight</Filter>
     </ClInclude>
     <ClCompile Include="..\..\Source\DeadByDaylight\Survivor.cpp">

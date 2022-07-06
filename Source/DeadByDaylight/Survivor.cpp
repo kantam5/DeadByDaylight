@@ -26,7 +26,6 @@ ASurvivor::ASurvivor()
 	// instead of recompiling to adjust them
 	GetCharacterMovement()->JumpZVelocity = 700.f;
 	GetCharacterMovement()->AirControl = 0.35f;
-	GetCharacterMovement()->MaxWalkSpeed = 500.f;
 	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
 
@@ -85,6 +84,8 @@ void ASurvivor::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 	PlayerInputComponent->BindAction(TEXT("StartRun"), EInputEvent::IE_Pressed, this, &ASurvivor::StartRun);
 	PlayerInputComponent->BindAction(TEXT("StartRun"), EInputEvent::IE_Released, this, &ASurvivor::StopRun);
+
+	
 }
 
 void ASurvivor::MoveForward(float Value)
@@ -118,10 +119,17 @@ void ASurvivor::MoveRight(float Value)
 
 void ASurvivor::StartRun()
 {
+	bRunning = true;
 	GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
 }
 
 void ASurvivor::StopRun()
 {
+	bRunning = false;
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+}
+
+bool ASurvivor::IsRunning()
+{
+	return bRunning;
 }

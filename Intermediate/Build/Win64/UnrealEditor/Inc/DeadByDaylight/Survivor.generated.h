@@ -14,8 +14,16 @@ PRAGMA_DISABLE_DEPRECATION_WARNINGS
 #define DEADBYDAYLIGHT_Survivor_generated_h
 
 #define FID_DeadByDaylight_Source_DeadByDaylight_Survivor_h_12_SPARSE_DATA
-#define FID_DeadByDaylight_Source_DeadByDaylight_Survivor_h_12_RPC_WRAPPERS
-#define FID_DeadByDaylight_Source_DeadByDaylight_Survivor_h_12_RPC_WRAPPERS_NO_PURE_DECLS
+#define FID_DeadByDaylight_Source_DeadByDaylight_Survivor_h_12_RPC_WRAPPERS \
+ \
+	DECLARE_FUNCTION(execIsRunning);
+
+
+#define FID_DeadByDaylight_Source_DeadByDaylight_Survivor_h_12_RPC_WRAPPERS_NO_PURE_DECLS \
+ \
+	DECLARE_FUNCTION(execIsRunning);
+
+
 #define FID_DeadByDaylight_Source_DeadByDaylight_Survivor_h_12_INCLASS_NO_PURE_DECLS \
 private: \
 	static void StaticRegisterNativesASurvivor(); \

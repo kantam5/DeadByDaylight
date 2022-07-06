@@ -25,12 +25,18 @@ class DEADBYDAYLIGHT_API ASurvivor : public ACharacter
 	UPROPERTY(EditAnywhere, Category = "Movement")
 	float RunSpeed;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Movement")
+	bool bRunning;
+
 public:
 	ASurvivor();
 
 	virtual void BeginPlay() override;
 
 	virtual void Tick(float DeltaTime) override;
+
+	UFUNCTION(BlueprintPure)
+	bool IsRunning();
 
 protected:
 	void MoveForward(float Value);
