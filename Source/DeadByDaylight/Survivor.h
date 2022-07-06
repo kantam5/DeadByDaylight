@@ -11,19 +11,44 @@ class DEADBYDAYLIGHT_API ASurvivor : public ACharacter
 {
 	GENERATED_BODY()
 
+	/** Camera boom positioning the camera behind the character */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	class USpringArmComponent* CameraBoom;
+
+	/** Follow camera */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	class UCameraComponent* FollowCamera;
+	
+	UPROPERTY(EditAnywhere, Category = "Movement")
+	float WalkSpeed;
+
+	UPROPERTY(EditAnywhere, Category = "Movement")
+	float RunSpeed;
+
 public:
-	// Sets default values for this character's properties
 	ASurvivor();
 
-protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	// Called to bind functionality to input
+protected:
+	void MoveForward(float Value);
+	void MoveRight(float Value);
+
+	void StartRun();
+	void StopRun();
+
+protected:
+	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	// End of APawn interface
+
+public:
+	/** Returns CameraBoom subobject **/
+	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+	/** Returns FollowCamera subobject **/
+	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
 
 };

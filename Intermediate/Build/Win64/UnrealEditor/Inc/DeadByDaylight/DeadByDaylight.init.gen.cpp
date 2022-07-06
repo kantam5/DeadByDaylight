@@ -17,7 +17,7 @@ void EmptyLinkFunctionForGeneratedCodeDeadByDaylight_init() {}
 				nullptr,
 				0,
 				PKG_CompiledIn | 0x00000000,
-				0x0DF2D7ED,
+				0x4AB15F5F,
 				0x983CB4DC,
 				METADATA_PARAMS(nullptr, 0)
 			};
@@ -25,5 +25,5 @@ void EmptyLinkFunctionForGeneratedCodeDeadByDaylight_init() {}
 		}
 		return Z_Registration_Info_UPackage__Script_DeadByDaylight.OuterSingleton;
 	}
-	static FRegisterCompiledInInfo Z_CompiledInDeferPackage_UPackage__Script_DeadByDaylight(Z_Construct_UPackage__Script_DeadByDaylight, TEXT("/Script/DeadByDaylight"), Z_Registration_Info_UPackage__Script_DeadByDaylight, CONSTRUCT_RELOAD_VERSION_INFO(FPackageReloadVersionInfo, 0x0DF2D7ED, 0x983CB4DC));
+	static FRegisterCompiledInInfo Z_CompiledInDeferPackage_UPackage__Script_DeadByDaylight(Z_Construct_UPackage__Script_DeadByDaylight, TEXT("/Script/DeadByDaylight"), Z_Registration_Info_UPackage__Script_DeadByDaylight, CONSTRUCT_RELOAD_VERSION_INFO(FPackageReloadVersionInfo, 0x4AB15F5F, 0x983CB4DC));
 PRAGMA_ENABLE_DEPRECATION_WARNINGS
