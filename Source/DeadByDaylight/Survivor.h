@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "Survivor.generated.h"
 
+
 UCLASS()
 class DEADBYDAYLIGHT_API ASurvivor : public ACharacter
 {
@@ -44,6 +45,10 @@ protected:
 
 	void StartRun();
 	void StopRun();
+
+	void Interact();
+
+	TArray<AActor*> OverlappingActors;
 
 protected:
 	// APawn interface

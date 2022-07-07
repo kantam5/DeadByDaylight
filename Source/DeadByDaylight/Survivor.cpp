@@ -6,6 +6,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "InteractiveActor.h"
 
 // Sets default values
 ASurvivor::ASurvivor()
@@ -64,7 +65,7 @@ void ASurvivor::BeginPlay()
 void ASurvivor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	
 }
 
 // Called to bind functionality to input
@@ -85,6 +86,7 @@ void ASurvivor::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction(TEXT("StartRun"), EInputEvent::IE_Pressed, this, &ASurvivor::StartRun);
 	PlayerInputComponent->BindAction(TEXT("StartRun"), EInputEvent::IE_Released, this, &ASurvivor::StopRun);
 
+	PlayerInputComponent->BindAction(TEXT("Interact"), EInputEvent::IE_Repeat, this, &ASurvivor::Interact);
 	
 }
 
@@ -114,6 +116,35 @@ void ASurvivor::MoveRight(float Value)
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 		// add movement in that direction
 		AddMovementInput(Direction, Value);
+	}
+}
+
+void ASurvivor::Interact()
+{
+	GetOverlappingActors(OverlappingActors);
+	
+	AActor* InteractingActor = OverlappingActors[0];
+	if (!OverlappingActors.IsEmpty())
+	{
+		double MinDistValue = FVector::Dist(GetActorLocation(), OverlappingActors[0]->GetActorLocation());
+
+		for (AActor* OverlappingActor : OverlappingActors)
+		{
+			if (MinDistValue > FVector::Dist(GetActorLocation(), OverlappingActor->GetActorLocation()))
+			{
+				InteractingActor = OverlappingActor;
+				MinDistValue = FVector::Dist(GetActorLocation(), OverlappingActor->GetActorLocation());
+			}
+		}
+	}
+	// object로 class를 파서 object에 interact함수를 파서 그거를 override해서 객체마다 다르게 행동하도록 만든다.
+	
+	UE_LOG(LogTemp, Warning, TEXT("%s"), InteractingActor);
+
+	if (InteractingActor)
+	{
+		AInteractiveActor* Actor = Cast<AInteractiveActor>(InteractingActor);
+		Actor->Interact();
 	}
 }
 
