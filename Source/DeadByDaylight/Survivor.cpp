@@ -86,7 +86,7 @@ void ASurvivor::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction(TEXT("StartRun"), EInputEvent::IE_Pressed, this, &ASurvivor::StartRun);
 	PlayerInputComponent->BindAction(TEXT("StartRun"), EInputEvent::IE_Released, this, &ASurvivor::StopRun);
 
-	PlayerInputComponent->BindAction(TEXT("Interact"), EInputEvent::IE_Repeat, this, &ASurvivor::Interact);
+	PlayerInputComponent->BindAxis(TEXT("Interact"), this, &ASurvivor::Interact);
 	
 }
 
@@ -119,32 +119,33 @@ void ASurvivor::MoveRight(float Value)
 	}
 }
 
-void ASurvivor::Interact()
+void ASurvivor::Interact(float Value)
 {
-	GetOverlappingActors(OverlappingActors);
-	
-	AActor* InteractingActor = OverlappingActors[0];
-	if (!OverlappingActors.IsEmpty())
+	if ((Controller != nullptr) && (Value != 0.0f))
 	{
-		double MinDistValue = FVector::Dist(GetActorLocation(), OverlappingActors[0]->GetActorLocation());
+		GetOverlappingActors(OverlappingActors);
 
-		for (AActor* OverlappingActor : OverlappingActors)
+		AActor* InteractingActor = nullptr;
+		float MinDistance = 1000.0f;
+
+		if (!OverlappingActors.IsEmpty())
 		{
-			if (MinDistValue > FVector::Dist(GetActorLocation(), OverlappingActor->GetActorLocation()))
+			for (AActor* OverlappingActor : OverlappingActors)
 			{
-				InteractingActor = OverlappingActor;
-				MinDistValue = FVector::Dist(GetActorLocation(), OverlappingActor->GetActorLocation());
+				float ActorDistance = FVector::Dist(GetActorLocation(), OverlappingActor->GetActorLocation());
+				if (MinDistance > ActorDistance)
+				{
+					MinDistance = ActorDistance;
+					InteractingActor = OverlappingActor;
+				}
 			}
 		}
-	}
-	// object로 class를 파서 object에 interact함수를 파서 그거를 override해서 객체마다 다르게 행동하도록 만든다.
-	
-	UE_LOG(LogTemp, Warning, TEXT("%s"), InteractingActor);
 
-	if (InteractingActor)
-	{
-		AInteractiveActor* Actor = Cast<AInteractiveActor>(InteractingActor);
-		Actor->Interact();
+		if (InteractingActor)
+		{
+			AInteractiveActor* Actor = Cast<AInteractiveActor>(InteractingActor);
+			Actor->Interact();
+		}
 	}
 }
 

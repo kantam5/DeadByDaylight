@@ -6,6 +6,7 @@
 #include "Components/BoxComponent.h"
 #include "Survivor.h"
 #include "Blueprint/UserWidget.h"
+#include "Misc/App.h"
 
 // Sets default values
 AGenerator::AGenerator()
@@ -45,7 +46,7 @@ void AGenerator::Interact()
 {
 	Super::Interact();
 
-	RepairProgress += 1.0f;
+	RepairProgress += FApp::GetDeltaTime() * 1.0f;
 }
 
 void AGenerator::HandleOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
