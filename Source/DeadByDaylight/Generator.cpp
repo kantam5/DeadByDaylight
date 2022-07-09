@@ -24,6 +24,7 @@ AGenerator::AGenerator()
 	SphereCollision->SetupAttachment(RootComponent);
 
 	RepairProgress = 0.0f;
+	MaxRepairProgress = 5.0f;
 }
 
 // Called when the game starts or when spawned
@@ -31,8 +32,8 @@ void AGenerator::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SphereCollision->OnComponentBeginOverlap.AddDynamic(this, &AGenerator::HandleOverlap);
-	SphereCollision->OnComponentEndOverlap.AddDynamic(this, &AGenerator::HandleEndOverlap);
+	// SphereCollision->OnComponentBeginOverlap.AddDynamic(this, &AGenerator::HandleOverlap);
+	// SphereCollision->OnComponentEndOverlap.AddDynamic(this, &AGenerator::HandleEndOverlap);
 }
 
 // Called every frame
@@ -44,26 +45,29 @@ void AGenerator::Tick(float DeltaTime)
 
 void AGenerator::Interact()
 {
-	Super::Interact();
-
-	RepairProgress += FApp::GetDeltaTime() * 1.0f;
-}
-
-void AGenerator::HandleOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	ASurvivor* Survivor = Cast<ASurvivor>(OtherActor);
-	RepairProgressScreen = CreateWidget<UUserWidget>(GetWorld(), RepairProgressWidget);
-	if (RepairProgressScreen)
+	if (RepairProgress != MaxRepairProgress)
 	{
-		RepairProgressScreen->AddToViewport();
-	}
+		Super::Interact();
 
-}
-
-void AGenerator::HandleEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	if (RepairProgressScreen)
-	{
-		RepairProgressScreen->RemoveFromViewport();
+		RepairProgress += FApp::GetDeltaTime() * 1.0f;
 	}
 }
+
+//void AGenerator::HandleOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+//{
+//	ASurvivor* Survivor = Cast<ASurvivor>(OtherActor);
+//	RepairProgressScreen = CreateWidget<UUserWidget>(GetWorld(), RepairProgressWidget);
+//	if (RepairProgressScreen)
+//	{
+//		RepairProgressScreen->AddToViewport();
+//	}
+//
+//}
+//
+//void AGenerator::HandleEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+//{
+//	if (RepairProgressScreen)
+//	{
+//		RepairProgressScreen->RemoveFromViewport();
+//	}
+//}

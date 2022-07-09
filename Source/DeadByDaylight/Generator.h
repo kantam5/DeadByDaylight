@@ -41,6 +41,9 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Gameplay", meta = (AllowPrivateAccess = "true"))
 	float RepairProgress;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Gameplay", meta = (AllowPrivateAccess = "true"))
+	float MaxRepairProgress;
+
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UUserWidget> RepairProgressWidget;
 
