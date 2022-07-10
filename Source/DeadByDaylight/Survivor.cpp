@@ -87,7 +87,6 @@ void ASurvivor::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction(TEXT("StartRun"), EInputEvent::IE_Released, this, &ASurvivor::StopRun);
 
 	PlayerInputComponent->BindAxis(TEXT("Interact"), this, &ASurvivor::Interact);
-	
 }
 
 void ASurvivor::MoveForward(float Value)
@@ -121,10 +120,10 @@ void ASurvivor::MoveRight(float Value)
 
 void ASurvivor::Interact(float Value)
 {
-	if ((Controller != nullptr) && (Value != 0.0f))
-	{
-		GetOverlappingActors(OverlappingActors);
+	GetOverlappingActors(OverlappingActors);
 
+	if ((Controller != nullptr) && (Value != 0.0f) && OverlappingActors.Num() != 0)
+	{
 		AActor* InteractingActor = nullptr;
 		float MinDistance = 1000.0f;
 
@@ -144,10 +143,30 @@ void ASurvivor::Interact(float Value)
 		if (InteractingActor)
 		{
 			AInteractiveActor* Actor = Cast<AInteractiveActor>(InteractingActor);
+			
 			Actor->Interact();
+
+			USceneComponent* InteractLocation = nullptr;
+			float MinInteractDistance = 1000.0f;
+			for (USceneComponent* InteractCharacterLocation : Actor->InteractCharacterLocations)
+			{
+				float LocationDistance = FVector::Dist(GetActorLocation(), InteractCharacterLocation->GetComponentLocation());
+				if (MinInteractDistance > LocationDistance)
+				{
+					MinInteractDistance = LocationDistance;
+					InteractLocation = InteractCharacterLocation;
+				}
+			}
+
+			SetActorLocation(FVector(InteractLocation->GetComponentLocation().X, InteractLocation->GetComponentLocation().Y, GetActorLocation().Z));
+
+			FVector ToTarget = Actor->GetActorLocation() - GetActorLocation();
+			FRotator LookAtRotation = FRotator(0.0f, ToTarget.Rotation().Yaw, 0.0f);
+			SetActorRotation(LookAtRotation);
 		}
 	}
 }
+
 
 void ASurvivor::StartRun()
 {

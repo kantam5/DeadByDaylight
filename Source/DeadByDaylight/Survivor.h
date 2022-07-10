@@ -47,7 +47,6 @@ protected:
 	void StopRun();
 
 	void Interact(float Value);
-	void Interact();
 
 	TArray<AActor*> OverlappingActors;
 

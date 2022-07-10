@@ -19,10 +19,26 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Coponents", meta = (AllowPrivateAccess = "true"))
+	UStaticMeshComponent* Mesh;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void Interact();
 
+	UPROPERTY(EditAnywhere, Category = "Coponents", meta = (AllowPrivateAccess = "true"))
+	USceneComponent* InteractCharacterLocation_0;
+
+	UPROPERTY(EditAnywhere, Category = "Coponents", meta = (AllowPrivateAccess = "true"))
+	USceneComponent* InteractCharacterLocation_1;
+
+	UPROPERTY(EditAnywhere, Category = "Coponents", meta = (AllowPrivateAccess = "true"))
+	USceneComponent* InteractCharacterLocation_2;
+
+	UPROPERTY(EditAnywhere, Category = "Coponents", meta = (AllowPrivateAccess = "true"))
+	USceneComponent* InteractCharacterLocation_3;
+
+	TArray<USceneComponent*> InteractCharacterLocations;
 };
