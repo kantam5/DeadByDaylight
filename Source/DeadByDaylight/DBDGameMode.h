@@ -23,4 +23,16 @@ public:
 
 private:
 	int RemainGenerator;
+
+	TArray<AActor*> ExitDoorSpawnPoints;
+
+	int ExitDoorSpawnPointIndex_1;
+	int ExitDoorSpawnPointIndex_2;
+
+	UPROPERTY(EditDefaultsOnly, Category = "GamePlay")
+	TSubclassOf<class AExitDoor> ExitDoorClass;
+
+	AExitDoor* ExitDoor_1;
+	AExitDoor* ExitDoor_2;
+
 };

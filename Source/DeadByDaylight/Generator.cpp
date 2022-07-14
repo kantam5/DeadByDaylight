@@ -25,7 +25,6 @@ AGenerator::AGenerator()
 	SphereCollision = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere Collision"));
 	SphereCollision->SetupAttachment(RootComponent);
 
-
 	RepairProgress = 0.0f;
 	MaxRepairProgress = 2.0f;
 

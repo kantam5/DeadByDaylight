@@ -53,6 +53,12 @@
     <ClInclude Include="..\..\Source\DeadByDaylight\DeadByDaylight.h">
       <Filter>Source\DeadByDaylight</Filter>
     </ClInclude>
+    <ClCompile Include="..\..\Source\DeadByDaylight\ExitDoor.cpp">
+      <Filter>Source\DeadByDaylight</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\DeadByDaylight\ExitDoor.h">
+      <Filter>Source\DeadByDaylight</Filter>
+    </ClInclude>
     <ClCompile Include="..\..\Source\DeadByDaylight\Generator.cpp">
       <Filter>Source\DeadByDaylight</Filter>
     </ClCompile>
