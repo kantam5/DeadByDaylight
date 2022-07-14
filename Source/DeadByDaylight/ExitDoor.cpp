@@ -2,33 +2,34 @@
 
 
 #include "ExitDoor.h"
+#include "Components/SphereComponent.h"
+#include "Misc/App.h"
 
 AExitDoor::AExitDoor()
 {
+	SphereCollision = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere Collision"));
+	SphereCollision->SetupAttachment(RootComponent);
+
 	PowerProgress = 0.0f;
 	MaxPowerProgress = 2.0f;
 
-	bActivated = false;
 	bPowered = false;
 
 }
 
 void AExitDoor::Interact()
 {
-	if (bActivated)
+	if (PowerProgress < MaxPowerProgress)
 	{
-		if (PowerProgress < MaxPowerProgress)
-		{
-			Super::Interact();
-
-			PowerProgress += FApp::GetDeltaTime() * 1.0f;
-		}
-		else if (bPowered != true)
-		{
-			bPowered = true;
-
-			// 문열기
-			SetActorHiddenInGame(true);
-		}
+		Super::Interact();
+	
+		PowerProgress += FApp::GetDeltaTime() * 1.0f;
+	}
+	else if (bPowered != true)
+	{
+		bPowered = true;
+	
+		// 문열기
+		SetActorHiddenInGame(true);
 	}
 }

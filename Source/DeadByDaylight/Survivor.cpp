@@ -125,7 +125,7 @@ void ASurvivor::Interact(float Value)
 	if ((Controller != nullptr) && (Value != 0.0f) && OverlappingActors.Num() != 0)
 	{
 		AActor* InteractingActor = nullptr;
-		float MinDistance = 1000.0f;
+		float MinDistance = 5000.0f;
 
 		if (!OverlappingActors.IsEmpty())
 		{
@@ -151,7 +151,7 @@ void ASurvivor::Interact(float Value)
 			for (USceneComponent* InteractCharacterLocation : Actor->InteractCharacterLocations)
 			{
 				float LocationDistance = FVector::Dist(GetActorLocation(), InteractCharacterLocation->GetComponentLocation());
-				if (MinInteractDistance > LocationDistance)
+				if (MinInteractDistance >= LocationDistance)
 				{
 					MinInteractDistance = LocationDistance;
 					InteractLocation = InteractCharacterLocation;

@@ -20,9 +20,11 @@ public:
 	virtual void Interact() override;
 
 private:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Coponents", meta = (AllowPrivateAccess = "true"))
+	class USphereComponent* SphereCollision;
+
 	float PowerProgress;
 	float MaxPowerProgress;
 
-	bool bActivated;
 	bool bPowered;
 };
