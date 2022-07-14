@@ -7,6 +7,8 @@
 #include "Survivor.h"
 #include "Blueprint/UserWidget.h"
 #include "Misc/App.h"
+#include "DBDGameMode.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AGenerator::AGenerator()
@@ -23,14 +25,20 @@ AGenerator::AGenerator()
 	SphereCollision = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere Collision"));
 	SphereCollision->SetupAttachment(RootComponent);
 
+
 	RepairProgress = 0.0f;
-	MaxRepairProgress = 5.0f;
+	MaxRepairProgress = 2.0f;
+
+	bRepaired = false;
 }
 
 // Called when the game starts or when spawned
 void AGenerator::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// GameMode는 BeginPlay에서 설정한다. (Crash 발생)
+	DBDGameMode = Cast<ADBDGameMode>(UGameplayStatics::GetGameMode(this));
 
 	// SphereCollision->OnComponentBeginOverlap.AddDynamic(this, &AGenerator::HandleOverlap);
 	// SphereCollision->OnComponentEndOverlap.AddDynamic(this, &AGenerator::HandleEndOverlap);
@@ -45,11 +53,16 @@ void AGenerator::Tick(float DeltaTime)
 
 void AGenerator::Interact()
 {
-	if (RepairProgress != MaxRepairProgress)
+	if (RepairProgress < MaxRepairProgress)
 	{
 		Super::Interact();
 
 		RepairProgress += FApp::GetDeltaTime() * 1.0f;
+	}
+	else if (bRepaired != true)
+	{
+		bRepaired = true;
+		DBDGameMode->RepairCompleted();
 	}
 }
 
