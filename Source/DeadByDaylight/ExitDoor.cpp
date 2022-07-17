@@ -38,7 +38,6 @@ void AExitDoor::Interact()
 		// 문열기
 		Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		Mesh->SetHiddenInGame(true);
-		// 여기서 게임모드를 가지고 있다면 싸이클?
 	}
 }
 

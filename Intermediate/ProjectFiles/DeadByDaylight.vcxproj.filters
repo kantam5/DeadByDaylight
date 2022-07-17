@@ -71,6 +71,12 @@
     <ClInclude Include="..\..\Source\DeadByDaylight\InteractiveActor.h">
       <Filter>Source\DeadByDaylight</Filter>
     </ClInclude>
+    <ClCompile Include="..\..\Source\DeadByDaylight\Killer.cpp">
+      <Filter>Source\DeadByDaylight</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\DeadByDaylight\Killer.h">
+      <Filter>Source\DeadByDaylight</Filter>
+    </ClInclude>
     <ClCompile Include="..\..\Source\DeadByDaylight\Survivor.cpp">
       <Filter>Source\DeadByDaylight</Filter>
     </ClCompile>

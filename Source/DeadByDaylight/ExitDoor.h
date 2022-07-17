@@ -30,15 +30,12 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Coponents", meta = (AllowPrivateAccess = "true"))
 	class USphereComponent* SphereCollision;
 
+	class ADBDGameMode* DBDGameMode;
+
 	float PowerProgress;
 	float MaxPowerProgress;
-
 	bool bPowered;
-
-	
 
 	UFUNCTION()
 	void HandleExitOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-	class ADBDGameMode* DBDGameMode;
 };
