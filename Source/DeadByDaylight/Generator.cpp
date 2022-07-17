@@ -5,7 +5,6 @@
 #include "Components/SphereComponent.h"
 #include "Components/BoxComponent.h"
 #include "Survivor.h"
-#include "Blueprint/UserWidget.h"
 #include "Misc/App.h"
 #include "DBDGameMode.h"
 #include "Kismet/GameplayStatics.h"

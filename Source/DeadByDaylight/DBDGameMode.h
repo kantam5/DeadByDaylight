@@ -32,7 +32,11 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "GamePlay")
 	TSubclassOf<class AExitDoor> ExitDoorClass;
 
-	AExitDoor* ExitDoor_1;
-	AExitDoor* ExitDoor_2;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UUserWidget> SurviveWidget;
 
+	UUserWidget* SurviveScreen;
+
+public:
+	void GameOver(bool bWonGame);
 };

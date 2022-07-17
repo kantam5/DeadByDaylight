@@ -6,6 +6,7 @@
 #include "Engine/TargetPoint.h"
 #include "Kismet/GameplayStatics.h"
 #include "Math/UnrealMathUtility.h"
+#include "Blueprint/UserWidget.h"
 
 void ADBDGameMode::BeginPlay()
 {
@@ -38,6 +39,15 @@ void ADBDGameMode::ActivateExitGenerator()
 	FVector ExitDoorSpawnLocation_2 = ExitDoorSpawnPoints[ExitDoorSpawnPointIndex_2]->GetActorLocation();
 	FRotator ExitDoorSpawnRotation_2 = ExitDoorSpawnPoints[ExitDoorSpawnPointIndex_2]->GetActorRotation();
 
-	ExitDoor_1 = GetWorld()->SpawnActor<AExitDoor>(ExitDoorClass, ExitDoorSpawnLocation_1, ExitDoorSpawnRotation_1);
-	ExitDoor_2 = GetWorld()->SpawnActor<AExitDoor>(ExitDoorClass, ExitDoorSpawnLocation_2, ExitDoorSpawnRotation_2);
+	GetWorld()->SpawnActor<AExitDoor>(ExitDoorClass, ExitDoorSpawnLocation_1, ExitDoorSpawnRotation_1);
+	GetWorld()->SpawnActor<AExitDoor>(ExitDoorClass, ExitDoorSpawnLocation_2, ExitDoorSpawnRotation_2);
+}
+
+void ADBDGameMode::GameOver(bool)
+{
+	SurviveScreen = CreateWidget<UUserWidget>(GetWorld(), SurviveWidget);
+	if (SurviveScreen)
+	{
+		SurviveScreen->AddToViewport();
+	}
 }
