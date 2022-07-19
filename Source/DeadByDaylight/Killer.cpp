@@ -5,6 +5,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Weapon.h"
+#include "KillerAnimInstance.h"
 
 // Sets default values
 AKiller::AKiller()
@@ -51,6 +52,8 @@ void AKiller::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 	PlayerInputComponent->BindAxis("Turn Right / Left Mouse", this, &APawn::AddControllerYawInput);
 	PlayerInputComponent->BindAxis("Look Up / Down Mouse", this, &APawn::AddControllerPitchInput);
+
+	PlayerInputComponent->BindAction("Attack", EInputEvent::IE_Pressed, this, &AKiller::Attack);
 }
 
 
@@ -80,5 +83,14 @@ void AKiller::MoveRight(float Value)
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 		// add movement in that direction
 		AddMovementInput(Direction, Value);
+	}
+}
+
+void AKiller::Attack()
+{
+	UKillerAnimInstance* KillerAnimInstance = Cast<UKillerAnimInstance>(GetMesh()->GetAnimInstance());
+	if (KillerAnimInstance)
+	{
+		KillerAnimInstance->PlayAttackMontage();
 	}
 }
