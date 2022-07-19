@@ -37,4 +37,10 @@ public:
 private:
 	UPROPERTY(EditAnywhere, Category = "Movement")
 	float WalkSpeed;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<class AWeapon> WeaponClass;
+
+	UPROPERTY()
+	AWeapon* Weapon;
 };

@@ -4,6 +4,7 @@
 #include "Killer.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Weapon.h"
 
 // Sets default values
 AKiller::AKiller()
@@ -24,6 +25,12 @@ void AKiller::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	Weapon = GetWorld()->SpawnActor<AWeapon>(WeaponClass);
+	if (Weapon)
+	{
+		Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("WeaponSocket"));
+		Weapon->SetOwner(this);
+	}
 }
 
 

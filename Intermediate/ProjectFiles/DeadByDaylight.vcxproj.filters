@@ -83,5 +83,11 @@
     <ClInclude Include="..\..\Source\DeadByDaylight\Survivor.h">
       <Filter>Source\DeadByDaylight</Filter>
     </ClInclude>
+    <ClCompile Include="..\..\Source\DeadByDaylight\Weapon.cpp">
+      <Filter>Source\DeadByDaylight</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\DeadByDaylight\Weapon.h">
+      <Filter>Source\DeadByDaylight</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
