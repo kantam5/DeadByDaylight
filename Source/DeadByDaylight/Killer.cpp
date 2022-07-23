@@ -32,6 +32,19 @@ void AKiller::BeginPlay()
 		Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("WeaponSocket"));
 		Weapon->SetOwner(this);
 	}
+
+}
+
+void AKiller::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	KillerAnimInstance = Cast<UKillerAnimInstance>(GetMesh()->GetAnimInstance());
+	if (KillerAnimInstance)
+	{
+		KillerAnimInstance->OnMontageEnded.AddDynamic(this, &AKiller::OnAttackMontageEnded);
+		KillerAnimInstance->OnAttackHit.AddUObject(this, &AKiller::AttackCheck);
+	}
 }
 
 
@@ -88,9 +101,45 @@ void AKiller::MoveRight(float Value)
 
 void AKiller::Attack()
 {
-	UKillerAnimInstance* KillerAnimInstance = Cast<UKillerAnimInstance>(GetMesh()->GetAnimInstance());
-	if (KillerAnimInstance)
+	if (bAttacking == true)
 	{
-		KillerAnimInstance->PlayAttackMontage();
+		return;
+	}
+
+	KillerAnimInstance->PlayAttackMontage();
+
+	bAttacking = true;
+}
+
+void AKiller::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+	bAttacking = false;
+}
+
+void AKiller::AttackCheck()
+{
+	FHitResult HitResult;
+	FCollisionQueryParams Params(NAME_None, false, this);
+
+	float AttackRange = 100.0f;
+	float AttackRadius = 50.0f;
+
+	bool bResult = GetWorld()->SweepSingleByChannel(
+		HitResult,
+		GetActorLocation(),
+		GetActorLocation() + GetActorForwardVector() * AttackRange,
+		FQuat::Identity,
+		ECollisionChannel::ECC_GameTraceChannel2,
+		FCollisionShape::MakeSphere(AttackRadius),
+		Params
+	);
+	UE_LOG(LogTemp, Warning, TEXT("Attack"));
+
+	if (bResult && HitResult.GetActor())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Hit Actor : %s"), *HitResult.GetActor()->GetName());
+
+		FDamageEvent DamageEvent;
+		HitResult.GetActor()->TakeDamage(1.0f, DamageEvent, GetController(), this);
 	}
 }

@@ -31,3 +31,8 @@ void UKillerAnimInstance::PlayAttackMontage()
 		Montage_Play(AttackMontage, 1.0f);
 	}
 }
+
+void UKillerAnimInstance::AnimNotify_AttackHit()
+{
+	OnAttackHit.Broadcast();
+}

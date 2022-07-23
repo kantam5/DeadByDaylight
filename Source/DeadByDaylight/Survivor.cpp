@@ -7,6 +7,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "InteractiveActor.h"
+#include "SurvivorStatComponent.h"
 
 // Sets default values
 ASurvivor::ASurvivor()
@@ -52,6 +53,8 @@ ASurvivor::ASurvivor()
 	RunSpeed = 1200.0f;
 
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+
+	Stat = CreateDefaultSubobject<USurvivorStatComponent>(TEXT("Stat"));
 }
 
 // Called when the game starts or when spawned
@@ -59,6 +62,12 @@ void ASurvivor::BeginPlay()
 {
 	Super::BeginPlay();
 	
+
+}
+
+void ASurvivor::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
 }
 
 // Called every frame
@@ -87,6 +96,13 @@ void ASurvivor::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction(TEXT("StartRun"), EInputEvent::IE_Released, this, &ASurvivor::StopRun);
 
 	PlayerInputComponent->BindAxis(TEXT("Interact"), this, &ASurvivor::Interact);
+}
+
+float ASurvivor::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	Stat->OnAttacked(DamageAmount);
+
+	return DamageAmount;
 }
 
 void ASurvivor::MoveForward(float Value)
@@ -166,7 +182,6 @@ void ASurvivor::Interact(float Value)
 		}
 	}
 }
-
 
 void ASurvivor::StartRun()
 {

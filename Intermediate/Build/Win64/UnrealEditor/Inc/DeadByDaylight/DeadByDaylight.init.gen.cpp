@@ -17,13 +17,13 @@ void EmptyLinkFunctionForGeneratedCodeDeadByDaylight_init() {}
 				nullptr,
 				0,
 				PKG_CompiledIn | 0x00000000,
-				0xA2792CF2,
-				0x9D8196C5,
+				0xFF5398A0,
+				0x4B8975C3,
 				METADATA_PARAMS(nullptr, 0)
 			};
 			UECodeGen_Private::ConstructUPackage(Z_Registration_Info_UPackage__Script_DeadByDaylight.OuterSingleton, PackageParams);
 		}
 		return Z_Registration_Info_UPackage__Script_DeadByDaylight.OuterSingleton;
 	}
-	static FRegisterCompiledInInfo Z_CompiledInDeferPackage_UPackage__Script_DeadByDaylight(Z_Construct_UPackage__Script_DeadByDaylight, TEXT("/Script/DeadByDaylight"), Z_Registration_Info_UPackage__Script_DeadByDaylight, CONSTRUCT_RELOAD_VERSION_INFO(FPackageReloadVersionInfo, 0xA2792CF2, 0x9D8196C5));
+	static FRegisterCompiledInInfo Z_CompiledInDeferPackage_UPackage__Script_DeadByDaylight(Z_Construct_UPackage__Script_DeadByDaylight, TEXT("/Script/DeadByDaylight"), Z_Registration_Info_UPackage__Script_DeadByDaylight, CONSTRUCT_RELOAD_VERSION_INFO(FPackageReloadVersionInfo, 0xFF5398A0, 0x4B8975C3));
 PRAGMA_ENABLE_DEPRECATION_WARNINGS

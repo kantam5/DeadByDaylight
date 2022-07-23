@@ -23,11 +23,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-protected:
-	void MoveForward(float Value);
-	void MoveRight(float Value);
-
-	void Attack();
+	virtual void PostInitializeComponents() override;
 
 public:	
 	// Called every frame
@@ -35,6 +31,19 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+public:
+	void MoveForward(float Value);
+	void MoveRight(float Value);
+
+	void Attack();
+
+	UFUNCTION()
+	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
+
+	UFUNCTION()
+	void AttackCheck();
+
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Movement")
@@ -45,4 +54,10 @@ private:
 
 	UPROPERTY()
 	AWeapon* Weapon;
+
+	UPROPERTY()
+	class UKillerAnimInstance* KillerAnimInstance;
+
+	UPROPERTY(VisibleAnywhere, Category = "Pawn")
+	bool bAttacking = false;
 };

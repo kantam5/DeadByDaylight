@@ -15,6 +15,7 @@ void EmptyLinkFunctionForGeneratedCodeSurvivor() {}
 	UPackage* Z_Construct_UPackage__Script_DeadByDaylight();
 	ENGINE_API UClass* Z_Construct_UClass_USpringArmComponent_NoRegister();
 	ENGINE_API UClass* Z_Construct_UClass_UCameraComponent_NoRegister();
+	DEADBYDAYLIGHT_API UClass* Z_Construct_UClass_USurvivorStatComponent_NoRegister();
 // End Cross Module References
 	DEFINE_FUNCTION(ASurvivor::execIsRunning)
 	{
@@ -101,6 +102,10 @@ void EmptyLinkFunctionForGeneratedCodeSurvivor() {}
 #endif
 		static void NewProp_bRunning_SetBit(void* Obj);
 		static const UECodeGen_Private::FBoolPropertyParams NewProp_bRunning;
+#if WITH_METADATA
+		static const UECodeGen_Private::FMetaDataPairParam NewProp_Stat_MetaData[];
+#endif
+		static const UECodeGen_Private::FObjectPropertyParams NewProp_Stat;
 		static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
 		static const FCppClassTypeInfoStatic StaticCppClassTypeInfo;
 		static const UECodeGen_Private::FClassParams ClassParams;
@@ -166,12 +171,21 @@ void EmptyLinkFunctionForGeneratedCodeSurvivor() {}
 		((ASurvivor*)Obj)->bRunning = 1;
 	}
 	const UECodeGen_Private::FBoolPropertyParams Z_Construct_UClass_ASurvivor_Statics::NewProp_bRunning = { "bRunning", nullptr, (EPropertyFlags)0x0040000000010001, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, RF_Public|RF_Transient|RF_MarkAsNative, 1, sizeof(bool), sizeof(ASurvivor), &Z_Construct_UClass_ASurvivor_Statics::NewProp_bRunning_SetBit, METADATA_PARAMS(Z_Construct_UClass_ASurvivor_Statics::NewProp_bRunning_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_ASurvivor_Statics::NewProp_bRunning_MetaData)) };
+#if WITH_METADATA
+	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_ASurvivor_Statics::NewProp_Stat_MetaData[] = {
+		{ "Category", "Survivor" },
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "Survivor.h" },
+	};
+#endif
+	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_ASurvivor_Statics::NewProp_Stat = { "Stat", nullptr, (EPropertyFlags)0x00400000000a0009, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, STRUCT_OFFSET(ASurvivor, Stat), Z_Construct_UClass_USurvivorStatComponent_NoRegister, METADATA_PARAMS(Z_Construct_UClass_ASurvivor_Statics::NewProp_Stat_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_ASurvivor_Statics::NewProp_Stat_MetaData)) };
 	const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UClass_ASurvivor_Statics::PropPointers[] = {
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ASurvivor_Statics::NewProp_CameraBoom,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ASurvivor_Statics::NewProp_FollowCamera,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ASurvivor_Statics::NewProp_WalkSpeed,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ASurvivor_Statics::NewProp_RunSpeed,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ASurvivor_Statics::NewProp_bRunning,
+		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ASurvivor_Statics::NewProp_Stat,
 	};
 	const FCppClassTypeInfoStatic Z_Construct_UClass_ASurvivor_Statics::StaticCppClassTypeInfo = {
 		TCppClassTypeTraits<ASurvivor>::IsAbstract,
@@ -209,9 +223,9 @@ void EmptyLinkFunctionForGeneratedCodeSurvivor() {}
 		static const FClassRegisterCompiledInInfo ClassInfo[];
 	};
 	const FClassRegisterCompiledInInfo Z_CompiledInDeferFile_FID_DeadByDaylight_Source_DeadByDaylight_Survivor_h_Statics::ClassInfo[] = {
-		{ Z_Construct_UClass_ASurvivor, ASurvivor::StaticClass, TEXT("ASurvivor"), &Z_Registration_Info_UClass_ASurvivor, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ASurvivor), 722234185U) },
+		{ Z_Construct_UClass_ASurvivor, ASurvivor::StaticClass, TEXT("ASurvivor"), &Z_Registration_Info_UClass_ASurvivor, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ASurvivor), 2878001821U) },
 	};
-	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_DeadByDaylight_Source_DeadByDaylight_Survivor_h_1304754078(TEXT("/Script/DeadByDaylight"),
+	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_DeadByDaylight_Source_DeadByDaylight_Survivor_h_2201648108(TEXT("/Script/DeadByDaylight"),
 		Z_CompiledInDeferFile_FID_DeadByDaylight_Source_DeadByDaylight_Survivor_h_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_DeadByDaylight_Source_DeadByDaylight_Survivor_h_Statics::ClassInfo),
 		nullptr, 0,
 		nullptr, 0);

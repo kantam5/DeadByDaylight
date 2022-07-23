@@ -38,6 +38,12 @@
     <Filter Include="Source\DeadByDaylight">
       <UniqueIdentifier>{CAF4413B-B15C-38CB-9CD9-E3DC965B4A6E}</UniqueIdentifier>
     </Filter>
+    <ClCompile Include="..\..\Source\DeadByDaylight\DBDGameInstance.cpp">
+      <Filter>Source\DeadByDaylight</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\DeadByDaylight\DBDGameInstance.h">
+      <Filter>Source\DeadByDaylight</Filter>
+    </ClInclude>
     <ClCompile Include="..\..\Source\DeadByDaylight\DBDGameMode.cpp">
       <Filter>Source\DeadByDaylight</Filter>
     </ClCompile>
@@ -87,6 +93,12 @@
       <Filter>Source\DeadByDaylight</Filter>
     </ClCompile>
     <ClInclude Include="..\..\Source\DeadByDaylight\Survivor.h">
+      <Filter>Source\DeadByDaylight</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\DeadByDaylight\SurvivorStatComponent.cpp">
+      <Filter>Source\DeadByDaylight</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\DeadByDaylight\SurvivorStatComponent.h">
       <Filter>Source\DeadByDaylight</Filter>
     </ClInclude>
     <ClCompile Include="..\..\Source\DeadByDaylight\Weapon.cpp">

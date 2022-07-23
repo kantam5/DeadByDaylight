@@ -6,6 +6,8 @@
 #include "Animation/AnimInstance.h"
 #include "KillerAnimInstance.generated.h"
 
+DECLARE_MULTICAST_DELEGATE(FOnAttackHit);
+
 /**
  * 
  */
@@ -22,6 +24,10 @@ public:
 	void PlayAttackMontage();
 
 private:
+	UFUNCTION()
+	void AnimNotify_AttackHit();
+
+private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, meta = (AllowPrivateAccess = "true"))
 	float Speed;
 	
@@ -30,4 +36,7 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Pawn, meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* AttackMontage;
+
+public:
+	FOnAttackHit OnAttackHit;
 };

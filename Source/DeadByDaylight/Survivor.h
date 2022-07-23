@@ -29,10 +29,15 @@ class DEADBYDAYLIGHT_API ASurvivor : public ACharacter
 	UPROPERTY(EditDefaultsOnly, Category = "Movement")
 	bool bRunning;
 
+	UPROPERTY(VisibleAnywhere)
+	class USurvivorStatComponent* Stat;
+
 public:
 	ASurvivor();
 
 	virtual void BeginPlay() override;
+
+	virtual void PostInitializeComponents() override;
 
 	virtual void Tick(float DeltaTime) override;
 
@@ -61,5 +66,6 @@ public:
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
+	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
 };

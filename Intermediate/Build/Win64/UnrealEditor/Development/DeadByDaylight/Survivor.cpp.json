@@ -41,7 +41,9 @@
             "c:\\program files\\epic games\\ue_5.0\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\shapecomponent.generated.h",
             "c:\\program files\\epic games\\ue_5.0\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\capsulecomponent.generated.h",
             "c:\\users\\wlsry\\desktop\\study\\unreal projects\\deadbydaylight\\source\\deadbydaylight\\interactiveactor.h",
-            "c:\\users\\wlsry\\desktop\\study\\unreal projects\\deadbydaylight\\intermediate\\build\\win64\\unrealeditor\\inc\\deadbydaylight\\interactiveactor.generated.h"
+            "c:\\users\\wlsry\\desktop\\study\\unreal projects\\deadbydaylight\\intermediate\\build\\win64\\unrealeditor\\inc\\deadbydaylight\\interactiveactor.generated.h",
+            "c:\\users\\wlsry\\desktop\\study\\unreal projects\\deadbydaylight\\source\\deadbydaylight\\survivorstatcomponent.h",
+            "c:\\users\\wlsry\\desktop\\study\\unreal projects\\deadbydaylight\\intermediate\\build\\win64\\unrealeditor\\inc\\deadbydaylight\\survivorstatcomponent.generated.h"
         ],
         "ImportedModules": [],
         "ImportedHeaderUnits": []
