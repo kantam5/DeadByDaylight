@@ -116,6 +116,7 @@ void AKiller::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 	bAttacking = false;
 }
 
+// 몽타주에서 설정한 AttackHit
 void AKiller::AttackCheck()
 {
 	FHitResult HitResult;

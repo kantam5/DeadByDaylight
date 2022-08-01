@@ -26,16 +26,16 @@ public:
 	void OnAttacked(float DamageAmount);
 
 	int32 GetHp() { return Hp; }
-	int32 GetWalkSpeed() { return WalkSpeed; }
-	int32 GetRunSpeed() { return RunSpeed; }
+	float GetWalkSpeed() { return WalkSpeed; }
+	float GetRunSpeed() { return RunSpeed; }
 
 private:
-	UPROPERTY(EditAnywhere, Category = Stat, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleAnywhere, Category = Stat, Meta = (AllowPrivateAccess = true))
 	int32 Hp;
 
-	UPROPERTY(EditAnywhere, Category = Stat, Meta = (AllowPrivateAccess = true))
-	int32 WalkSpeed;
+	UPROPERTY(VisibleAnywhere, Category = Stat, Meta = (AllowPrivateAccess = true))
+	float WalkSpeed;
 
-	UPROPERTY(EditAnywhere, Category = Stat, Meta = (AllowPrivateAccess = true))
-	int32 RunSpeed;
+	UPROPERTY(VisibleAnywhere, Category = Stat, Meta = (AllowPrivateAccess = true))
+	float RunSpeed;
 };

@@ -12,36 +12,17 @@ class DEADBYDAYLIGHT_API ASurvivor : public ACharacter
 {
 	GENERATED_BODY()
 
-	/** Camera boom positioning the camera behind the character */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class USpringArmComponent* CameraBoom;
-
-	/** Follow camera */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class UCameraComponent* FollowCamera;
-	
-	UPROPERTY(EditAnywhere, Category = "Movement")
-	float WalkSpeed;
-
-	UPROPERTY(EditAnywhere, Category = "Movement")
-	float RunSpeed;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Movement")
-	bool bRunning;
-
-	UPROPERTY(VisibleAnywhere)
-	class USurvivorStatComponent* Stat;
-
 public:
 	ASurvivor();
 
+protected:
 	virtual void BeginPlay() override;
 
 	virtual void PostInitializeComponents() override;
 
+public:
 	virtual void Tick(float DeltaTime) override;
 
-	UFUNCTION(BlueprintPure)
 	bool IsRunning();
 
 protected:
@@ -51,9 +32,11 @@ protected:
 	void StartRun();
 	void StopRun();
 
+	void CrouchStart();
+	void CrouchEnd();
+
 	void Interact(float Value);
 
-	TArray<AActor*> OverlappingActors;
 
 protected:
 	// APawn interface
@@ -66,6 +49,34 @@ public:
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
+	int32 GetHp() { return Hp; }
+
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
+private:
+	/** Camera boom positioning the camera behind the character */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	class USpringArmComponent* CameraBoom;
+
+	/** Follow camera */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	class UCameraComponent* FollowCamera;
+
+	UPROPERTY(VisibleAnywhere, Category = Stat, Meta = (AllowPrivateAccess = true))
+	int32 Hp;
+
+	UPROPERTY(EditAnywhere, Category = "Movement")
+	float WalkSpeed;
+
+	UPROPERTY(EditAnywhere, Category = "Movement")
+	float RunSpeed;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Movement")
+	bool bRunning;
+
+	UPROPERTY(VisibleAnywhere)
+	class USurvivorStatComponent* Stat;
+
+	UPROPERTY(VisibleAnywhere)
+	TArray<AActor*> OverlappingActors;
 };

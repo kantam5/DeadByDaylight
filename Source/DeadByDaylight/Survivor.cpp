@@ -49,25 +49,28 @@ ASurvivor::ASurvivor()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	Stat = CreateDefaultSubobject<USurvivorStatComponent>(TEXT("Stat"));
 	WalkSpeed = 600.0f;
 	RunSpeed = 1200.0f;
 
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 
-	Stat = CreateDefaultSubobject<USurvivorStatComponent>(TEXT("Stat"));
 }
 
 // Called when the game starts or when spawned
 void ASurvivor::BeginPlay()
 {
 	Super::BeginPlay();
-	
 
+	Hp = Stat->GetHp();
+	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
+	GetCharacterMovement()->SetCrouchedHalfHeight(200.0f);
 }
 
 void ASurvivor::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
+
 }
 
 // Called every frame
@@ -92,15 +95,22 @@ void ASurvivor::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAxis("Turn Right / Left Mouse", this, &APawn::AddControllerYawInput);
 	PlayerInputComponent->BindAxis("Look Up / Down Mouse", this, &APawn::AddControllerPitchInput);
 
+	PlayerInputComponent->BindAxis(TEXT("Interact"), this, &ASurvivor::Interact);
+
 	PlayerInputComponent->BindAction(TEXT("StartRun"), EInputEvent::IE_Pressed, this, &ASurvivor::StartRun);
 	PlayerInputComponent->BindAction(TEXT("StartRun"), EInputEvent::IE_Released, this, &ASurvivor::StopRun);
 
-	PlayerInputComponent->BindAxis(TEXT("Interact"), this, &ASurvivor::Interact);
+	PlayerInputComponent->BindAction(TEXT("Crouch"), EInputEvent::IE_Pressed, this, &ASurvivor::CrouchStart);
+	PlayerInputComponent->BindAction(TEXT("Crouch"), EInputEvent::IE_Released, this, &ASurvivor::CrouchEnd);
+
 }
 
 float ASurvivor::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
+	// Stat에서 Survivor의 상태를 변경
 	Stat->OnAttacked(DamageAmount);
+
+	Hp = Stat->GetHp();
 
 	return DamageAmount;
 }
@@ -136,10 +146,12 @@ void ASurvivor::MoveRight(float Value)
 
 void ASurvivor::Interact(float Value)
 {
+	// Survivor와 Overlap된 Actor들 중에서 가장 가까운 Actors에 Interact
 	GetOverlappingActors(OverlappingActors);
 
 	if ((Controller != nullptr) && (Value != 0.0f) && OverlappingActors.Num() != 0)
 	{
+		// 가장 가까운 InteractingActor
 		AActor* InteractingActor = nullptr;
 		float MinDistance = 5000.0f;
 
@@ -159,9 +171,12 @@ void ASurvivor::Interact(float Value)
 		if (InteractingActor)
 		{
 			AInteractiveActor* Actor = Cast<AInteractiveActor>(InteractingActor);
-			
-			Actor->Interact();
+			if (Actor)
+			{
+				Actor->Interact();
+			}
 
+			// Interact시 Survivor의 위치를 고정
 			USceneComponent* InteractLocation = nullptr;
 			float MinInteractDistance = 1000.0f;
 			for (USceneComponent* InteractCharacterLocation : Actor->InteractCharacterLocations)
@@ -193,6 +208,16 @@ void ASurvivor::StopRun()
 {
 	bRunning = false;
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+}
+
+void ASurvivor::CrouchStart()
+{
+	Crouch();
+}
+
+void ASurvivor::CrouchEnd()
+{
+	UnCrouch();
 }
 
 bool ASurvivor::IsRunning()

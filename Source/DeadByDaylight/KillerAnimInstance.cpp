@@ -32,6 +32,7 @@ void UKillerAnimInstance::PlayAttackMontage()
 	}
 }
 
+// 몽타주에서 설정한 AttackHit
 void UKillerAnimInstance::AnimNotify_AttackHit()
 {
 	OnAttackHit.Broadcast();

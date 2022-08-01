@@ -95,6 +95,12 @@
     <ClInclude Include="..\..\Source\DeadByDaylight\Survivor.h">
       <Filter>Source\DeadByDaylight</Filter>
     </ClInclude>
+    <ClCompile Include="..\..\Source\DeadByDaylight\SurvivorAnimInstance.cpp">
+      <Filter>Source\DeadByDaylight</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\DeadByDaylight\SurvivorAnimInstance.h">
+      <Filter>Source\DeadByDaylight</Filter>
+    </ClInclude>
     <ClCompile Include="..\..\Source\DeadByDaylight\SurvivorStatComponent.cpp">
       <Filter>Source\DeadByDaylight</Filter>
     </ClCompile>

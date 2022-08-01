@@ -44,7 +44,6 @@ public:
 	UFUNCTION()
 	void AttackCheck();
 
-
 private:
 	UPROPERTY(EditAnywhere, Category = "Movement")
 	float WalkSpeed;
