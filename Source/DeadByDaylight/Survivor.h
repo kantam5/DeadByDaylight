@@ -24,6 +24,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	bool IsRunning();
+	bool IsInteracting();
 
 protected:
 	void MoveForward(float Value);
@@ -36,6 +37,7 @@ protected:
 	void CrouchEnd();
 
 	void Interact(float Value);
+	void EndInteract();
 
 
 protected:
@@ -73,6 +75,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Movement")
 	bool bRunning;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Movement")
+	bool bInteracting;
 
 	UPROPERTY(VisibleAnywhere)
 	class USurvivorStatComponent* Stat;

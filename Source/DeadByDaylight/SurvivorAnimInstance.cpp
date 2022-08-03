@@ -29,6 +29,7 @@ void USurvivorAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		bFalling = Character->GetMovementComponent()->IsFalling();
 		bCrouching = Character->GetMovementComponent()->IsCrouching();
 		bRunning = Character->IsRunning();
+		bInteracting = Character->IsInteracting();
 
 		if (Character->GetHp() == 2)
 		{

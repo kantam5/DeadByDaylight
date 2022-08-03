@@ -96,6 +96,7 @@ void ASurvivor::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAxis("Look Up / Down Mouse", this, &APawn::AddControllerPitchInput);
 
 	PlayerInputComponent->BindAxis(TEXT("Interact"), this, &ASurvivor::Interact);
+	PlayerInputComponent->BindAction(TEXT("Interact"), EInputEvent::IE_Released, this, &ASurvivor::EndInteract);
 
 	PlayerInputComponent->BindAction(TEXT("StartRun"), EInputEvent::IE_Pressed, this, &ASurvivor::StartRun);
 	PlayerInputComponent->BindAction(TEXT("StartRun"), EInputEvent::IE_Released, this, &ASurvivor::StopRun);
@@ -194,8 +195,15 @@ void ASurvivor::Interact(float Value)
 			FVector ToTarget = Actor->GetActorLocation() - GetActorLocation();
 			FRotator LookAtRotation = FRotator(0.0f, ToTarget.Rotation().Yaw, 0.0f);
 			SetActorRotation(LookAtRotation);
+
+			bInteracting = true;
 		}
 	}
+}
+
+void ASurvivor::EndInteract()
+{
+	bInteracting = false;
 }
 
 void ASurvivor::StartRun()
@@ -223,4 +231,9 @@ void ASurvivor::CrouchEnd()
 bool ASurvivor::IsRunning()
 {
 	return bRunning;
+}
+
+bool ASurvivor::IsInteracting()
+{
+	return bInteracting;
 }
