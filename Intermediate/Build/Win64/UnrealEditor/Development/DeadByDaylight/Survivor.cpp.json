@@ -43,7 +43,11 @@
             "c:\\users\\wlsry\\desktop\\study\\unreal projects\\deadbydaylight\\source\\deadbydaylight\\interactiveactor.h",
             "c:\\users\\wlsry\\desktop\\study\\unreal projects\\deadbydaylight\\intermediate\\build\\win64\\unrealeditor\\inc\\deadbydaylight\\interactiveactor.generated.h",
             "c:\\users\\wlsry\\desktop\\study\\unreal projects\\deadbydaylight\\source\\deadbydaylight\\survivorstatcomponent.h",
-            "c:\\users\\wlsry\\desktop\\study\\unreal projects\\deadbydaylight\\intermediate\\build\\win64\\unrealeditor\\inc\\deadbydaylight\\survivorstatcomponent.generated.h"
+            "c:\\users\\wlsry\\desktop\\study\\unreal projects\\deadbydaylight\\intermediate\\build\\win64\\unrealeditor\\inc\\deadbydaylight\\survivorstatcomponent.generated.h",
+            "c:\\users\\wlsry\\desktop\\study\\unreal projects\\deadbydaylight\\source\\deadbydaylight\\window.h",
+            "c:\\users\\wlsry\\desktop\\study\\unreal projects\\deadbydaylight\\intermediate\\build\\win64\\unrealeditor\\inc\\deadbydaylight\\window.generated.h",
+            "c:\\users\\wlsry\\desktop\\study\\unreal projects\\deadbydaylight\\source\\deadbydaylight\\survivoraniminstance.h",
+            "c:\\users\\wlsry\\desktop\\study\\unreal projects\\deadbydaylight\\intermediate\\build\\win64\\unrealeditor\\inc\\deadbydaylight\\survivoraniminstance.generated.h"
         ],
         "ImportedModules": [],
         "ImportedHeaderUnits": []

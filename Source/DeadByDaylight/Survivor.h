@@ -39,6 +39,10 @@ protected:
 	void Interact(float Value);
 	void EndInteract();
 
+	void Vault();
+	void OnVaultMontageEnded(UAnimMontage* Montage, bool bInterrupted);
+	void EndVaultMontage();
+
 
 protected:
 	// APawn interface
@@ -84,4 +88,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	TArray<AActor*> OverlappingActors;
+
+	UPROPERTY()
+	class USurvivorAnimInstance* SurvivorAnimInstance;
+
+	FVector WindowPalletInteractMoveLocation;
 };

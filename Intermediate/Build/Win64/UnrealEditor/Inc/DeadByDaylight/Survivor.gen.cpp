@@ -17,6 +17,7 @@ void EmptyLinkFunctionForGeneratedCodeSurvivor() {}
 	ENGINE_API UClass* Z_Construct_UClass_UCameraComponent_NoRegister();
 	DEADBYDAYLIGHT_API UClass* Z_Construct_UClass_USurvivorStatComponent_NoRegister();
 	ENGINE_API UClass* Z_Construct_UClass_AActor_NoRegister();
+	DEADBYDAYLIGHT_API UClass* Z_Construct_UClass_USurvivorAnimInstance_NoRegister();
 // End Cross Module References
 	void ASurvivor::StaticRegisterNativesASurvivor()
 	{
@@ -71,6 +72,10 @@ void EmptyLinkFunctionForGeneratedCodeSurvivor() {}
 		static const UECodeGen_Private::FMetaDataPairParam NewProp_OverlappingActors_MetaData[];
 #endif
 		static const UECodeGen_Private::FArrayPropertyParams NewProp_OverlappingActors;
+#if WITH_METADATA
+		static const UECodeGen_Private::FMetaDataPairParam NewProp_SurvivorAnimInstance_MetaData[];
+#endif
+		static const UECodeGen_Private::FObjectPropertyParams NewProp_SurvivorAnimInstance;
 		static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
 		static const FCppClassTypeInfoStatic StaticCppClassTypeInfo;
 		static const UECodeGen_Private::FClassParams ClassParams;
@@ -168,6 +173,12 @@ void EmptyLinkFunctionForGeneratedCodeSurvivor() {}
 	};
 #endif
 	const UECodeGen_Private::FArrayPropertyParams Z_Construct_UClass_ASurvivor_Statics::NewProp_OverlappingActors = { "OverlappingActors", nullptr, (EPropertyFlags)0x0040000000020001, UECodeGen_Private::EPropertyGenFlags::Array, RF_Public|RF_Transient|RF_MarkAsNative, 1, STRUCT_OFFSET(ASurvivor, OverlappingActors), EArrayPropertyFlags::None, METADATA_PARAMS(Z_Construct_UClass_ASurvivor_Statics::NewProp_OverlappingActors_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_ASurvivor_Statics::NewProp_OverlappingActors_MetaData)) };
+#if WITH_METADATA
+	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_ASurvivor_Statics::NewProp_SurvivorAnimInstance_MetaData[] = {
+		{ "ModuleRelativePath", "Survivor.h" },
+	};
+#endif
+	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_ASurvivor_Statics::NewProp_SurvivorAnimInstance = { "SurvivorAnimInstance", nullptr, (EPropertyFlags)0x0040000000000000, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, STRUCT_OFFSET(ASurvivor, SurvivorAnimInstance), Z_Construct_UClass_USurvivorAnimInstance_NoRegister, METADATA_PARAMS(Z_Construct_UClass_ASurvivor_Statics::NewProp_SurvivorAnimInstance_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_ASurvivor_Statics::NewProp_SurvivorAnimInstance_MetaData)) };
 	const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UClass_ASurvivor_Statics::PropPointers[] = {
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ASurvivor_Statics::NewProp_CameraBoom,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ASurvivor_Statics::NewProp_FollowCamera,
@@ -179,6 +190,7 @@ void EmptyLinkFunctionForGeneratedCodeSurvivor() {}
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ASurvivor_Statics::NewProp_Stat,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ASurvivor_Statics::NewProp_OverlappingActors_Inner,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ASurvivor_Statics::NewProp_OverlappingActors,
+		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ASurvivor_Statics::NewProp_SurvivorAnimInstance,
 	};
 	const FCppClassTypeInfoStatic Z_Construct_UClass_ASurvivor_Statics::StaticCppClassTypeInfo = {
 		TCppClassTypeTraits<ASurvivor>::IsAbstract,
@@ -216,9 +228,9 @@ void EmptyLinkFunctionForGeneratedCodeSurvivor() {}
 		static const FClassRegisterCompiledInInfo ClassInfo[];
 	};
 	const FClassRegisterCompiledInInfo Z_CompiledInDeferFile_FID_DeadByDaylight_Source_DeadByDaylight_Survivor_h_Statics::ClassInfo[] = {
-		{ Z_Construct_UClass_ASurvivor, ASurvivor::StaticClass, TEXT("ASurvivor"), &Z_Registration_Info_UClass_ASurvivor, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ASurvivor), 4265080650U) },
+		{ Z_Construct_UClass_ASurvivor, ASurvivor::StaticClass, TEXT("ASurvivor"), &Z_Registration_Info_UClass_ASurvivor, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ASurvivor), 3489380333U) },
 	};
-	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_DeadByDaylight_Source_DeadByDaylight_Survivor_h_4135486341(TEXT("/Script/DeadByDaylight"),
+	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_DeadByDaylight_Source_DeadByDaylight_Survivor_h_504157502(TEXT("/Script/DeadByDaylight"),
 		Z_CompiledInDeferFile_FID_DeadByDaylight_Source_DeadByDaylight_Survivor_h_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_DeadByDaylight_Source_DeadByDaylight_Survivor_h_Statics::ClassInfo),
 		nullptr, 0,
 		nullptr, 0);

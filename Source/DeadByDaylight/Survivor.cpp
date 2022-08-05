@@ -8,6 +8,9 @@
 #include "Components/CapsuleComponent.h"
 #include "InteractiveActor.h"
 #include "SurvivorStatComponent.h"
+#include "Window.h"
+#include "Math/UnrealMathUtility.h"
+#include "SurvivorAnimInstance.h"
 
 // Sets default values
 ASurvivor::ASurvivor()
@@ -71,12 +74,15 @@ void ASurvivor::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
+	SurvivorAnimInstance = Cast<USurvivorAnimInstance>(GetMesh()->GetAnimInstance());
+
 }
 
 // Called every frame
 void ASurvivor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
 	
 }
 
@@ -104,6 +110,7 @@ void ASurvivor::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction(TEXT("Crouch"), EInputEvent::IE_Pressed, this, &ASurvivor::CrouchStart);
 	PlayerInputComponent->BindAction(TEXT("Crouch"), EInputEvent::IE_Released, this, &ASurvivor::CrouchEnd);
 
+	PlayerInputComponent->BindAction(TEXT("Vault"), EInputEvent::IE_Pressed, this, &ASurvivor::Vault);
 }
 
 float ASurvivor::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -150,7 +157,7 @@ void ASurvivor::Interact(float Value)
 	// Survivor와 Overlap된 Actor들 중에서 가장 가까운 Actors에 Interact
 	GetOverlappingActors(OverlappingActors);
 
-	if ((Controller != nullptr) && (Value != 0.0f) && OverlappingActors.Num() != 0)
+	if ((Controller != nullptr) && (Value != 0.0f) && !OverlappingActors.IsEmpty())
 	{
 		// 가장 가까운 InteractingActor
 		AActor* InteractingActor = nullptr;
@@ -204,6 +211,90 @@ void ASurvivor::Interact(float Value)
 void ASurvivor::EndInteract()
 {
 	bInteracting = false;
+}
+
+void ASurvivor::Vault()
+{
+	// 오버랩 되면은 창틀의 반대방향으로 넘어간다. 
+	// 창틀에서 플레이어보다 먼 위치의 반대방향의 방향으로 점점 이동하는 코드
+	// 달릴 때 넘으면 더 빨리 넘도록 설정
+	
+	GetOverlappingActors(OverlappingActors);
+	if (Controller != nullptr && !OverlappingActors.IsEmpty())
+	{
+		// 가장 가까운 InteractingActor
+		AActor* InteractingActor = nullptr;
+		float MinDistance = 5000.0f;
+
+		if (!OverlappingActors.IsEmpty())
+		{
+			for (AActor* OverlappingActor : OverlappingActors)
+			{
+				float ActorDistance = FVector::Dist(GetActorLocation(), OverlappingActor->GetActorLocation());
+				if (MinDistance > ActorDistance)
+				{
+					MinDistance = ActorDistance;
+					InteractingActor = OverlappingActor;
+				}
+
+			}
+		}
+
+		if (InteractingActor)
+		{
+			AWindow* Window = Cast<AWindow>(InteractingActor);
+			if (Window)
+			{
+				USceneComponent* MoveLocation = nullptr;
+				USceneComponent* InteractLocation = nullptr;
+				float MaxInteractDistance = 0.0f;
+				float MinInteractDistance = 1000.0f;
+				for (USceneComponent* InteractCharacterLocation : Window->InteractCharacterLocations)
+				{
+					float LocationDistance = FVector::Dist(GetActorLocation(), InteractCharacterLocation->GetComponentLocation());
+					if (MaxInteractDistance <= LocationDistance)
+					{
+						MaxInteractDistance = LocationDistance;
+						MoveLocation = InteractCharacterLocation;
+					}
+					if (MinInteractDistance >= LocationDistance)
+					{
+						MinInteractDistance = LocationDistance;
+						InteractLocation = InteractCharacterLocation;
+					}
+				}
+
+				GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
+				GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+				SetActorLocation(FVector(InteractLocation->GetComponentLocation().X, InteractLocation->GetComponentLocation().Y, GetActorLocation().Z));
+
+				// 일단 애니매이션이 모두 플레이된다음 넘어가기 
+				// 몽타주 앤드에서 위치 이동
+				// 로테이션을 가는 방향으로
+
+				GetCharacterMovement()->StopMovementImmediately();
+
+				FVector ToTarget = MoveLocation->GetComponentLocation() - InteractLocation->GetComponentLocation();
+				FRotator LookAtRotation = FRotator(0.0f, ToTarget.Rotation().Yaw, 0.0f);
+				SetActorRotation(LookAtRotation);
+
+				FTimerHandle VaultTimerHandle;
+				float VaultMontageDelay = SurvivorAnimInstance->PlayVaultMontage();
+				WindowPalletInteractMoveLocation = FVector(MoveLocation->GetComponentLocation().X, MoveLocation->GetComponentLocation().Y, GetActorLocation().Z);
+				GetWorld()->GetTimerManager().SetTimer(VaultTimerHandle, this, &ASurvivor::EndVaultMontage, VaultMontageDelay);
+			}
+		}
+	}
+}
+
+void ASurvivor::EndVaultMontage()
+{
+	SetActorLocation(WindowPalletInteractMoveLocation);
+
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+
+	WindowPalletInteractMoveLocation = GetActorLocation();
 }
 
 void ASurvivor::StartRun()

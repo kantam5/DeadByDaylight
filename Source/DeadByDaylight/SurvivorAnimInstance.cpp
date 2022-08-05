@@ -41,3 +41,16 @@ void USurvivorAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		}
 	}
 }
+
+float USurvivorAnimInstance::PlayVaultMontage()
+{
+	if (!Montage_IsPlaying(VaultMontage))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Valut Montage"));
+		return Montage_Play(VaultMontage);
+	}
+	else
+	{
+		return 0.0f;
+	}
+}

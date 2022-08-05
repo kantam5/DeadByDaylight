@@ -18,6 +18,8 @@ public:
 	USurvivorAnimInstance();
 
 	virtual void NativeUpdateAnimation(float DeltaSeconds);
+
+	float PlayVaultMontage();
 	
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, meta = (AllowPrivateAccess = "true"))
@@ -40,4 +42,7 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, meta = (AllowPrivateAccess = "true"))
 	bool bInteracting;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Pawn, meta = (AllowPrivateAccess = "true"))
+	UAnimMontage* VaultMontage;
 };
