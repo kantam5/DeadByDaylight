@@ -268,18 +268,16 @@ void ASurvivor::Vault()
 				GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 				SetActorLocation(FVector(InteractLocation->GetComponentLocation().X, InteractLocation->GetComponentLocation().Y, GetActorLocation().Z));
 
-				// 일단 애니매이션이 모두 플레이된다음 넘어가기 
-				// 몽타주 앤드에서 위치 이동
-				// 로테이션을 가는 방향으로
-
-				GetCharacterMovement()->StopMovementImmediately();
-
 				FVector ToTarget = MoveLocation->GetComponentLocation() - InteractLocation->GetComponentLocation();
 				FRotator LookAtRotation = FRotator(0.0f, ToTarget.Rotation().Yaw, 0.0f);
 				SetActorRotation(LookAtRotation);
 
+				GetCharacterMovement()->StopMovementImmediately();
+				APlayerController* PlayerController = Cast<APlayerController>(GetController());
+				PlayerController->SetIgnoreMoveInput(true);
+
 				FTimerHandle VaultTimerHandle;
-				float VaultMontageDelay = SurvivorAnimInstance->PlayVaultMontage();
+				float VaultMontageDelay = SurvivorAnimInstance->PlayVaultMontage() - 0.2f;
 				WindowPalletInteractMoveLocation = FVector(MoveLocation->GetComponentLocation().X, MoveLocation->GetComponentLocation().Y, GetActorLocation().Z);
 				GetWorld()->GetTimerManager().SetTimer(VaultTimerHandle, this, &ASurvivor::EndVaultMontage, VaultMontageDelay);
 			}
@@ -293,6 +291,9 @@ void ASurvivor::EndVaultMontage()
 
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+
+	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+	PlayerController->SetIgnoreMoveInput(false);
 
 	WindowPalletInteractMoveLocation = GetActorLocation();
 }
