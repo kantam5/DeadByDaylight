@@ -22,12 +22,17 @@ protected:
 	virtual void InitializeComponent() override;
 
 public:
+	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+public:
 	void SetMaxHp(int32 MaxHp);
 	void OnAttacked(float DamageAmount);
 
 	int32 GetHp() { return Hp; }
 	float GetWalkSpeed() { return WalkSpeed; }
 	float GetRunSpeed() { return RunSpeed; }
+
+	void Recover();
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = Stat, Meta = (AllowPrivateAccess = true))
@@ -38,4 +43,12 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = Stat, Meta = (AllowPrivateAccess = true))
 	float RunSpeed;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Stat, meta = (AllowPrivateAccess = "true"))
+	float MaxRepairProgress;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Stat, meta = (AllowPrivateAccess = "true"))
+	float RecoverProgress;
+
+	bool bRecovered;
 };

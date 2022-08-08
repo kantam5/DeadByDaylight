@@ -39,6 +39,9 @@ protected:
 	void Interact(float Value);
 	void EndInteract();
 
+	void Heal(float Value);
+	void EndHeal();
+
 	void Vault();
 	void EndVaultMontage();
 
@@ -57,6 +60,7 @@ public:
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
 	int32 GetHp() { return Hp; }
+	void RecoverHp() { Hp++; }
 
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
@@ -68,6 +72,10 @@ private:
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera;
+
+	// 다른 생존자를 힐 할 때 필요
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Coponents", meta = (AllowPrivateAccess = "true"))
+	class USphereComponent* SphereCollision;
 
 	UPROPERTY(VisibleAnywhere, Category = Stat, Meta = (AllowPrivateAccess = true))
 	int32 Hp;
@@ -94,4 +102,5 @@ private:
 	class USurvivorAnimInstance* SurvivorAnimInstance;
 
 	FVector WindowPalletInteractMoveLocation;
+
 };

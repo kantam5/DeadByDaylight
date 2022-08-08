@@ -31,12 +31,19 @@ void USurvivorAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		bRunning = Character->IsRunning();
 		bInteracting = Character->IsInteracting();
 
+		if (Character->GetHp() == 3)
+		{
+			bInjured = false;
+			bSeriousInjured = false;
+		}
 		if (Character->GetHp() == 2)
 		{
 			bInjured = true;
+			bSeriousInjured = false;
 		}
 		else if (Character->GetHp() == 1)
 		{
+			bInjured = true;
 			bSeriousInjured = true;
 		}
 	}

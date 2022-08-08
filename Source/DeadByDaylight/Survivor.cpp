@@ -12,6 +12,7 @@
 #include "Math/UnrealMathUtility.h"
 #include "SurvivorAnimInstance.h"
 #include "Pallet.h"
+#include "Components/SphereComponent.h"
 
 // Sets default values
 ASurvivor::ASurvivor()
@@ -59,6 +60,9 @@ ASurvivor::ASurvivor()
 
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 
+	SphereCollision = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere Collision"));
+	SphereCollision->SetupAttachment(RootComponent);
+
 }
 
 // Called when the game starts or when spawned
@@ -69,6 +73,10 @@ void ASurvivor::BeginPlay()
 	Hp = Stat->GetHp();
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
 	GetCharacterMovement()->SetCrouchedHalfHeight(200.0f);
+
+	// Hp 2인 상태로 시작
+	FDamageEvent DamageEvent;
+	TakeDamage(1.0f, DamageEvent, GetController(), this);
 }
 
 void ASurvivor::PostInitializeComponents()
@@ -83,7 +91,6 @@ void ASurvivor::PostInitializeComponents()
 void ASurvivor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 // Called to bind functionality to input
@@ -178,7 +185,7 @@ void ASurvivor::Interact(float Value)
 			}
 		}
 
-		if (InteractingActor)
+		if (InteractingActor && InteractingActor->IsA(AInteractiveActor::StaticClass()) && Stat->GetHp() >= 2)
 		{
 			AInteractiveActor* Actor = Cast<AInteractiveActor>(InteractingActor);
 			if (Actor)
@@ -189,13 +196,16 @@ void ASurvivor::Interact(float Value)
 			// Interact시 Survivor의 위치를 고정
 			USceneComponent* InteractLocation = nullptr;
 			float MinInteractDistance = 1000.0f;
-			for (USceneComponent* InteractCharacterLocation : Actor->InteractCharacterLocations)
+			if (!InteractLocation)
 			{
-				float LocationDistance = FVector::Dist(GetActorLocation(), InteractCharacterLocation->GetComponentLocation());
-				if (MinInteractDistance >= LocationDistance)
+				for (USceneComponent* InteractCharacterLocation : Actor->InteractCharacterLocations)
 				{
-					MinInteractDistance = LocationDistance;
-					InteractLocation = InteractCharacterLocation;
+					float LocationDistance = FVector::Dist(GetActorLocation(), InteractCharacterLocation->GetComponentLocation());
+					if (MinInteractDistance >= LocationDistance)
+					{
+						MinInteractDistance = LocationDistance;
+						InteractLocation = InteractCharacterLocation;
+					}
 				}
 			}
 
@@ -206,6 +216,26 @@ void ASurvivor::Interact(float Value)
 			SetActorRotation(LookAtRotation);
 
 			bInteracting = true;
+		}
+		else if (InteractingActor && InteractingActor->IsA(ASurvivor::StaticClass()) && Stat->GetHp() >= 2)
+		{
+			ASurvivor* WoundedSurvivor = Cast<ASurvivor>(InteractingActor);
+
+			if (WoundedSurvivor)
+			{
+				if (WoundedSurvivor->Stat->GetHp() <= 2)
+				{
+					WoundedSurvivor->Stat->Recover();
+
+					GetCharacterMovement()->StopMovementImmediately();
+
+					FVector ToTarget = WoundedSurvivor->GetActorLocation() - GetActorLocation();
+					FRotator LookAtRotation = FRotator(0.0f, ToTarget.Rotation().Yaw, 0.0f);
+					SetActorRotation(LookAtRotation);
+
+					bInteracting = true;
+				}
+			}
 		}
 	}
 }

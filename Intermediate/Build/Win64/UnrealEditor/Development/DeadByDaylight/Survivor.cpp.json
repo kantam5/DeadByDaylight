@@ -49,7 +49,9 @@
             "c:\\users\\wlsry\\desktop\\study\\unreal projects\\deadbydaylight\\source\\deadbydaylight\\survivoraniminstance.h",
             "c:\\users\\wlsry\\desktop\\study\\unreal projects\\deadbydaylight\\intermediate\\build\\win64\\unrealeditor\\inc\\deadbydaylight\\survivoraniminstance.generated.h",
             "c:\\users\\wlsry\\desktop\\study\\unreal projects\\deadbydaylight\\source\\deadbydaylight\\pallet.h",
-            "c:\\users\\wlsry\\desktop\\study\\unreal projects\\deadbydaylight\\intermediate\\build\\win64\\unrealeditor\\inc\\deadbydaylight\\pallet.generated.h"
+            "c:\\users\\wlsry\\desktop\\study\\unreal projects\\deadbydaylight\\intermediate\\build\\win64\\unrealeditor\\inc\\deadbydaylight\\pallet.generated.h",
+            "c:\\program files\\epic games\\ue_5.0\\engine\\source\\runtime\\engine\\classes\\components\\spherecomponent.h",
+            "c:\\program files\\epic games\\ue_5.0\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\spherecomponent.generated.h"
         ],
         "ImportedModules": [],
         "ImportedHeaderUnits": []
