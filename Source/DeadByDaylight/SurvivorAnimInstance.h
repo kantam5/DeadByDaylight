@@ -20,6 +20,8 @@ public:
 	virtual void NativeUpdateAnimation(float DeltaSeconds);
 
 	float PlayVaultMontage();
+
+	float PlayPullDownMontage();
 	
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, meta = (AllowPrivateAccess = "true"))
@@ -45,4 +47,7 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Pawn, meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* VaultMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Pawn, meta = (AllowPrivateAccess = "true"))
+	UAnimMontage* PullDownMontage;
 };

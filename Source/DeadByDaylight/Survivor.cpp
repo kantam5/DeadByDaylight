@@ -11,6 +11,7 @@
 #include "Window.h"
 #include "Math/UnrealMathUtility.h"
 #include "SurvivorAnimInstance.h"
+#include "Pallet.h"
 
 // Sets default values
 ASurvivor::ASurvivor()
@@ -82,8 +83,7 @@ void ASurvivor::PostInitializeComponents()
 void ASurvivor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
-	
+
 }
 
 // Called to bind functionality to input
@@ -111,6 +111,8 @@ void ASurvivor::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction(TEXT("Crouch"), EInputEvent::IE_Released, this, &ASurvivor::CrouchEnd);
 
 	PlayerInputComponent->BindAction(TEXT("Vault"), EInputEvent::IE_Pressed, this, &ASurvivor::Vault);
+
+	PlayerInputComponent->BindAction(TEXT("Pull Down"), EInputEvent::IE_Pressed, this, &ASurvivor::PullDown);
 }
 
 float ASurvivor::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -224,6 +226,7 @@ void ASurvivor::Vault()
 	{
 		// 가장 가까운 InteractingActor
 		AActor* InteractingActor = nullptr;
+		AWindow* Window = nullptr;
 		float MinDistance = 5000.0f;
 
 		if (!OverlappingActors.IsEmpty())
@@ -236,50 +239,48 @@ void ASurvivor::Vault()
 					MinDistance = ActorDistance;
 					InteractingActor = OverlappingActor;
 				}
-
 			}
-		}
-
-		if (InteractingActor)
-		{
-			AWindow* Window = Cast<AWindow>(InteractingActor);
-			if (Window)
+			if (InteractingActor)
 			{
-				USceneComponent* MoveLocation = nullptr;
-				USceneComponent* InteractLocation = nullptr;
-				float MaxInteractDistance = 0.0f;
-				float MinInteractDistance = 1000.0f;
-				for (USceneComponent* InteractCharacterLocation : Window->InteractCharacterLocations)
+				Window = Cast<AWindow>(InteractingActor);
+				if (Window)
 				{
-					float LocationDistance = FVector::Dist(GetActorLocation(), InteractCharacterLocation->GetComponentLocation());
-					if (MaxInteractDistance <= LocationDistance)
+					USceneComponent* MoveLocation = nullptr;
+					USceneComponent* InteractLocation = nullptr;
+					float MaxInteractDistance = 0.0f;
+					float MinInteractDistance = 1000.0f;
+					for (USceneComponent* InteractCharacterLocation : Window->InteractCharacterLocations)
 					{
-						MaxInteractDistance = LocationDistance;
-						MoveLocation = InteractCharacterLocation;
+						float LocationDistance = FVector::Dist(GetActorLocation(), InteractCharacterLocation->GetComponentLocation());
+						if (MaxInteractDistance <= LocationDistance)
+						{
+							MaxInteractDistance = LocationDistance;
+							MoveLocation = InteractCharacterLocation;
+						}
+						if (MinInteractDistance >= LocationDistance)
+						{
+							MinInteractDistance = LocationDistance;
+							InteractLocation = InteractCharacterLocation;
+						}
 					}
-					if (MinInteractDistance >= LocationDistance)
-					{
-						MinInteractDistance = LocationDistance;
-						InteractLocation = InteractCharacterLocation;
-					}
+
+					GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
+					GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+					SetActorLocation(FVector(InteractLocation->GetComponentLocation().X, InteractLocation->GetComponentLocation().Y, GetActorLocation().Z));
+
+					FVector ToTarget = MoveLocation->GetComponentLocation() - InteractLocation->GetComponentLocation();
+					FRotator LookAtRotation = FRotator(0.0f, ToTarget.Rotation().Yaw, 0.0f);
+					SetActorRotation(LookAtRotation);
+
+					GetCharacterMovement()->StopMovementImmediately();
+					APlayerController* PlayerController = Cast<APlayerController>(GetController());
+					PlayerController->SetIgnoreMoveInput(true);
+
+					FTimerHandle VaultTimerHandle;
+					float VaultMontageDelay = SurvivorAnimInstance->PlayVaultMontage() - 0.2f;
+					WindowPalletInteractMoveLocation = FVector(MoveLocation->GetComponentLocation().X, MoveLocation->GetComponentLocation().Y, GetActorLocation().Z);
+					GetWorld()->GetTimerManager().SetTimer(VaultTimerHandle, this, &ASurvivor::EndVaultMontage, VaultMontageDelay);
 				}
-
-				GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
-				GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-				SetActorLocation(FVector(InteractLocation->GetComponentLocation().X, InteractLocation->GetComponentLocation().Y, GetActorLocation().Z));
-
-				FVector ToTarget = MoveLocation->GetComponentLocation() - InteractLocation->GetComponentLocation();
-				FRotator LookAtRotation = FRotator(0.0f, ToTarget.Rotation().Yaw, 0.0f);
-				SetActorRotation(LookAtRotation);
-
-				GetCharacterMovement()->StopMovementImmediately();
-				APlayerController* PlayerController = Cast<APlayerController>(GetController());
-				PlayerController->SetIgnoreMoveInput(true);
-
-				FTimerHandle VaultTimerHandle;
-				float VaultMontageDelay = SurvivorAnimInstance->PlayVaultMontage() - 0.2f;
-				WindowPalletInteractMoveLocation = FVector(MoveLocation->GetComponentLocation().X, MoveLocation->GetComponentLocation().Y, GetActorLocation().Z);
-				GetWorld()->GetTimerManager().SetTimer(VaultTimerHandle, this, &ASurvivor::EndVaultMontage, VaultMontageDelay);
 			}
 		}
 	}
@@ -291,6 +292,122 @@ void ASurvivor::EndVaultMontage()
 
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+
+	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+	PlayerController->SetIgnoreMoveInput(false);
+
+	WindowPalletInteractMoveLocation = GetActorLocation();
+}
+
+void ASurvivor::PullDown()
+{
+	GetOverlappingActors(OverlappingActors);
+	if (Controller != nullptr && !OverlappingActors.IsEmpty())
+	{
+		// 가장 가까운 InteractingActor
+		AActor* InteractingActor = nullptr;
+		APallet* Pallet = nullptr;
+		float MinDistance = 5000.0f;
+
+		if (!OverlappingActors.IsEmpty())
+		{
+			for (AActor* OverlappingActor : OverlappingActors)
+			{
+				float ActorDistance = FVector::Dist(GetActorLocation(), OverlappingActor->GetActorLocation());
+				if (MinDistance > ActorDistance)
+				{
+					MinDistance = ActorDistance;
+					InteractingActor = OverlappingActor;
+				}
+			}
+			if (InteractingActor)
+			{
+				Pallet = Cast<APallet>(InteractingActor);
+				if (Pallet)
+				{
+					USceneComponent* MaxDistanceLocation = nullptr;
+					USceneComponent* MinDistanceLocation = nullptr;
+					if (!Pallet->GetUsed())
+					{
+						float MaxInteractDistance = 0.0f;
+						float MinInteractDistance = 1000.0f;
+						for (USceneComponent* InteractCharacterLocation : Pallet->InteractCharacterLocations)
+						{
+							float LocationDistance = FVector::Dist(GetActorLocation(), InteractCharacterLocation->GetComponentLocation());
+							if (MaxInteractDistance <= LocationDistance)
+							{
+								MaxInteractDistance = LocationDistance;
+								MaxDistanceLocation = InteractCharacterLocation;
+							}
+							if (MinInteractDistance >= LocationDistance)
+							{
+								MinInteractDistance = LocationDistance;
+								MinDistanceLocation = InteractCharacterLocation;
+							}
+						}
+
+						SetActorLocation(FVector(MinDistanceLocation->GetComponentLocation().X, MinDistanceLocation->GetComponentLocation().Y, GetActorLocation().Z));
+
+						FVector ToTarget = MaxDistanceLocation->GetComponentLocation() - MinDistanceLocation->GetComponentLocation();
+						FRotator LookAtRotation = FRotator(0.0f, ToTarget.Rotation().Yaw, 0.0f);
+						SetActorRotation(LookAtRotation);
+
+						GetCharacterMovement()->StopMovementImmediately();
+						APlayerController* PlayerController = Cast<APlayerController>(GetController());
+						PlayerController->SetIgnoreMoveInput(true);
+
+						Pallet->Interact();
+
+						FTimerHandle PullDownTimerHandle;
+						float PullDownMontageDelay = SurvivorAnimInstance->PlayPullDownMontage() - 0.2f;
+						WindowPalletInteractMoveLocation = FVector(MinDistanceLocation->GetComponentLocation().X, MinDistanceLocation->GetComponentLocation().Y, GetActorLocation().Z);
+						GetWorld()->GetTimerManager().SetTimer(PullDownTimerHandle, this, &ASurvivor::EndVaultMontage, PullDownMontageDelay);
+					}
+					else if (Pallet->GetUsed())
+					{
+						float MaxInteractDistance = 0.0f;
+						float MinInteractDistance = 1000.0f;
+						for (USceneComponent* InteractCharacterLocation : Pallet->InteractCharacterLocations)
+						{
+							float LocationDistance = FVector::Dist(GetActorLocation(), InteractCharacterLocation->GetComponentLocation());
+							if (MaxInteractDistance <= LocationDistance)
+							{
+								MaxInteractDistance = LocationDistance;
+								MaxDistanceLocation = InteractCharacterLocation;
+							}
+							if (MinInteractDistance >= LocationDistance)
+							{
+								MinInteractDistance = LocationDistance;
+								MinDistanceLocation = InteractCharacterLocation;
+							}
+						}
+
+						GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
+						GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+						SetActorLocation(FVector(MinDistanceLocation->GetComponentLocation().X, MinDistanceLocation->GetComponentLocation().Y, GetActorLocation().Z));
+
+						FVector ToTarget = MaxDistanceLocation->GetComponentLocation() - MinDistanceLocation->GetComponentLocation();
+						FRotator LookAtRotation = FRotator(0.0f, ToTarget.Rotation().Yaw, 0.0f);
+						SetActorRotation(LookAtRotation);
+
+						GetCharacterMovement()->StopMovementImmediately();
+						APlayerController* PlayerController = Cast<APlayerController>(GetController());
+						PlayerController->SetIgnoreMoveInput(true);
+
+						FTimerHandle VaultTimerHandle;
+						float VaultMontageDelay = SurvivorAnimInstance->PlayVaultMontage() - 0.2f;
+						WindowPalletInteractMoveLocation = FVector(MaxDistanceLocation->GetComponentLocation().X, MaxDistanceLocation->GetComponentLocation().Y, GetActorLocation().Z);
+						GetWorld()->GetTimerManager().SetTimer(VaultTimerHandle, this, &ASurvivor::EndVaultMontage, VaultMontageDelay);
+					}
+				}
+			}
+		}
+	}
+}
+
+void ASurvivor::EndPullDownMontage()
+{
+	SetActorLocation(WindowPalletInteractMoveLocation);
 
 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
 	PlayerController->SetIgnoreMoveInput(false);

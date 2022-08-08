@@ -54,3 +54,16 @@ float USurvivorAnimInstance::PlayVaultMontage()
 		return 0.0f;
 	}
 }
+
+float USurvivorAnimInstance::PlayPullDownMontage()
+{
+	if (!Montage_IsPlaying(PullDownMontage))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("PullDown Montage"));
+		return Montage_Play(PullDownMontage);
+	}
+	else
+	{
+		return 0.0f;
+	}
+}

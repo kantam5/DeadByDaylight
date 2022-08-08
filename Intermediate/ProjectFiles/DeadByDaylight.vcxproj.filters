@@ -14,6 +14,7 @@
     <None Include="..\..\.gitattributes" />
     <None Include="..\..\.gitignore" />
     <None Include="..\..\SURVIVOR.ipch" />
+    <None Include="..\..\SURVIVORANIMINSTANCE.ipch" />
     <Filter Include="Config">
       <UniqueIdentifier>{FA535FFB-25E1-3D20-B416-52F9BE21E06E}</UniqueIdentifier>
     </Filter>
@@ -87,6 +88,12 @@
       <Filter>Source\DeadByDaylight</Filter>
     </ClCompile>
     <ClInclude Include="..\..\Source\DeadByDaylight\KillerAnimInstance.h">
+      <Filter>Source\DeadByDaylight</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\DeadByDaylight\Pallet.cpp">
+      <Filter>Source\DeadByDaylight</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\DeadByDaylight\Pallet.h">
       <Filter>Source\DeadByDaylight</Filter>
     </ClInclude>
     <ClCompile Include="..\..\Source\DeadByDaylight\Survivor.cpp">

@@ -40,9 +40,10 @@ protected:
 	void EndInteract();
 
 	void Vault();
-	void OnVaultMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 	void EndVaultMontage();
 
+	void PullDown();
+	void EndPullDownMontage();
 
 protected:
 	// APawn interface
