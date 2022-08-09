@@ -47,6 +47,8 @@ public:
 	void Interact(float Value);
 	void EndInteract();
 
+	bool IsInteracting() { return bInteracting; }
+
 private:
 	UPROPERTY(EditAnywhere, Category = "Movement")
 	float WalkSpeed;

@@ -4,6 +4,7 @@
 #include "KillerAnimInstance.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/PawnMovementComponent.h"
+#include "Killer.h"
 
 UKillerAnimInstance::UKillerAnimInstance()
 {
@@ -19,8 +20,10 @@ void UKillerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	{
 		Speed = Pawn->GetVelocity().Size();
 
-		ACharacter* Character = Cast<ACharacter>(Pawn);
+		AKiller* Character = Cast<AKiller>(Pawn);
+
 		bFalling = Character->GetMovementComponent()->IsFalling();
+		bInteracting = Character->IsInteracting();
 	}
 }
 
