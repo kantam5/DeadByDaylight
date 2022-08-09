@@ -44,6 +44,9 @@ public:
 	UFUNCTION()
 	void AttackCheck();
 
+	void Interact(float Value);
+	void EndInteract();
+
 private:
 	UPROPERTY(EditAnywhere, Category = "Movement")
 	float WalkSpeed;
@@ -59,4 +62,12 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "Pawn")
 	bool bAttacking = false;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Movement")
+	bool bInteracting = false;
+
+	UPROPERTY(VisibleAnywhere)
+	TArray<AActor*> OverlappingActors;
+
+	class AInteractiveActor* InteractingActor;
 };

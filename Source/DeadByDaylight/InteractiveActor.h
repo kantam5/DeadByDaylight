@@ -29,6 +29,12 @@ public:
 
 	virtual void Interact();
 
+	virtual void KillerInteract();
+
+	virtual void KillerEndInteract();
+
+	virtual bool IsBroken();
+
 	UPROPERTY(EditAnywhere, Category = "Coponents", meta = (AllowPrivateAccess = "true"))
 	USceneComponent* InteractCharacterLocation_0;
 
@@ -42,4 +48,6 @@ public:
 	USceneComponent* InteractCharacterLocation_3;
 
 	TArray<USceneComponent*> InteractCharacterLocations;
+
+	bool bBroken;
 };

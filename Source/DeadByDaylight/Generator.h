@@ -28,6 +28,10 @@ public:
 
 	virtual void Interact() override;
 
+	virtual void KillerInteract() override;
+
+	virtual void KillerEndInteract() override;
+
 private:
 	/*UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Coponents", meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* Mesh;*/
@@ -52,6 +56,14 @@ private:
 	class ADBDGameMode* DBDGameMode;
 
 	bool bRepaired;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Gameplay", meta = (AllowPrivateAccess = "true"))
+	float BrokenProgress;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Gameplay", meta = (AllowPrivateAccess = "true"))
+	float MaxBrokenProgress;
+
+	// bool bBroken;
 
 	/*UFUNCTION()
 	void HandleOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);

@@ -24,10 +24,14 @@ AGenerator::AGenerator()
 	SphereCollision = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere Collision"));
 	SphereCollision->SetupAttachment(RootComponent);
 
-	RepairProgress = 0.0f;
-	MaxRepairProgress = 2.0f;
+	RepairProgress = 4.0f;
+	MaxRepairProgress = 5.0f;
+
+	BrokenProgress = 0.0f;
+	MaxBrokenProgress = 1.0f;
 
 	bRepaired = false;
+	bBroken = false;
 }
 
 // Called when the game starts or when spawned
@@ -47,6 +51,13 @@ void AGenerator::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (bBroken == true)
+	{
+		if (RepairProgress > 0.0f)
+		{
+			RepairProgress -= DeltaTime * 0.3f;
+		}
+	}
 }
 
 void AGenerator::Interact()
@@ -55,6 +66,7 @@ void AGenerator::Interact()
 	{
 		Super::Interact();
 
+		bBroken = false;
 		RepairProgress += FApp::GetDeltaTime() * 1.0f;
 	}
 	else if (bRepaired != true)
@@ -62,6 +74,25 @@ void AGenerator::Interact()
 		bRepaired = true;
 		DBDGameMode->RepairCompleted();
 	}
+}
+
+void AGenerator::KillerInteract()
+{
+	if (BrokenProgress < MaxBrokenProgress && bBroken == false)
+	{
+		Super::KillerInteract();
+		BrokenProgress += FApp::GetDeltaTime() * 1.0f;
+	}
+	else if (bBroken != true)
+	{
+		BrokenProgress = 0.0f;
+		bBroken = true;
+	}
+}
+
+void AGenerator::KillerEndInteract()
+{
+	BrokenProgress = 0.0f;
 }
 
 //void AGenerator::HandleOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

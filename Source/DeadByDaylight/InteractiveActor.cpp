@@ -47,3 +47,18 @@ void AInteractiveActor::Interact()
 {
 	
 }
+
+void AInteractiveActor::KillerInteract()
+{
+
+}
+
+void AInteractiveActor::KillerEndInteract()
+{
+
+}
+
+bool AInteractiveActor::IsBroken()
+{
+	return bBroken;
+}

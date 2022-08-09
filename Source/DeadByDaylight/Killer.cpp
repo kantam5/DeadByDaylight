@@ -6,6 +6,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Weapon.h"
 #include "KillerAnimInstance.h"
+#include "InteractiveActor.h"
+#include "Generator.h"
 
 // Sets default values
 AKiller::AKiller()
@@ -67,6 +69,9 @@ void AKiller::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAxis("Look Up / Down Mouse", this, &APawn::AddControllerPitchInput);
 
 	PlayerInputComponent->BindAction("Attack", EInputEvent::IE_Pressed, this, &AKiller::Attack);
+
+	PlayerInputComponent->BindAxis("Killer Interact", this, &AKiller::Interact);
+	PlayerInputComponent->BindAction("Killer Interact", EInputEvent::IE_Released, this, &AKiller::EndInteract);
 }
 
 
@@ -143,4 +148,77 @@ void AKiller::AttackCheck()
 		FDamageEvent DamageEvent;
 		HitResult.GetActor()->TakeDamage(1.0f, DamageEvent, GetController(), this);
 	}
+}
+
+void AKiller::Interact(float Value)
+{
+	// Survivor와 Overlap된 Actor들 중에서 가장 가까운 Actors에 Interact
+	GetOverlappingActors(OverlappingActors);
+
+	if ((Controller != nullptr) && (Value != 0.0f) && !OverlappingActors.IsEmpty())
+	{
+		// 가장 가까운 InteractingActor
+		AActor* MinOverlappingActor = nullptr;
+		float MinDistance = 5000.0f;
+
+		if (!OverlappingActors.IsEmpty())
+		{
+			for (AActor* OverlappingActor : OverlappingActors)
+			{
+				float ActorDistance = FVector::Dist(GetActorLocation(), OverlappingActor->GetActorLocation());
+				if (MinDistance > ActorDistance)
+				{
+					MinDistance = ActorDistance;
+					MinOverlappingActor = OverlappingActor;
+				}
+			}
+		}
+
+		if (MinOverlappingActor && MinOverlappingActor->IsA(AGenerator::StaticClass()))
+		{
+			InteractingActor = Cast<AGenerator>(MinOverlappingActor);
+			if (InteractingActor && !InteractingActor->IsBroken())
+			{
+				InteractingActor->KillerInteract();
+			}
+
+			// Interact시 위치를 고정
+			USceneComponent* InteractLocation = nullptr;
+			float MinInteractDistance = 1000.0f;
+			if (!InteractLocation)
+			{
+				for (USceneComponent* InteractCharacterLocation : InteractingActor->InteractCharacterLocations)
+				{
+					float LocationDistance = FVector::Dist(GetActorLocation(), InteractCharacterLocation->GetComponentLocation());
+					if (MinInteractDistance >= LocationDistance)
+					{
+						MinInteractDistance = LocationDistance;
+						InteractLocation = InteractCharacterLocation;
+					}
+				}
+			}
+
+			if (!InteractingActor->IsBroken())
+			{
+				SetActorLocation(FVector(InteractLocation->GetComponentLocation().X, InteractLocation->GetComponentLocation().Y, GetActorLocation().Z));
+
+				FVector ToTarget = InteractingActor->GetActorLocation() - GetActorLocation();
+				FRotator LookAtRotation = FRotator(0.0f, ToTarget.Rotation().Yaw, 0.0f);
+				SetActorRotation(LookAtRotation);
+
+				bInteracting = true;
+			}
+		}
+	}
+}
+
+void AKiller::EndInteract()
+{
+	if (InteractingActor)
+	{
+		InteractingActor->KillerEndInteract();
+		InteractingActor = nullptr;
+	}
+
+	bInteracting = false;
 }
