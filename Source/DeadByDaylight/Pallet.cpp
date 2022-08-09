@@ -11,11 +11,21 @@ APallet::APallet()
 
 	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
-	bUsed = false;
+	BrokenProgress = 0.0f;
+	MaxBrokenProgress = 1.1f;
+
+	bUsed = true;
 }
 
 void APallet::BeginPlay()
 {
+	Super::BeginPlay();
+}
+
+void APallet::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
 }
 
 void APallet::Interact()
@@ -26,4 +36,26 @@ void APallet::Interact()
 	Mesh->SetRelativeRotation(UsedPalletRotation);
 	
 	bUsed = true;
+}
+
+
+void APallet::KillerInteract()
+{
+	if (BrokenProgress < MaxBrokenProgress && bBroken == false)
+	{
+		Super::KillerInteract();
+		BrokenProgress += FApp::GetDeltaTime() * 1.0f;
+	}
+	else if (bBroken != true)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Broke"));
+		BrokenProgress = 0.0f;
+		bBroken = true;
+		Destroy();
+	}
+}
+
+void APallet::KillerEndInteract()
+{
+	BrokenProgress = 0.0f;
 }

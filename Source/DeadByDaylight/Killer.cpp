@@ -8,6 +8,7 @@
 #include "KillerAnimInstance.h"
 #include "InteractiveActor.h"
 #include "Generator.h"
+#include "Pallet.h"
 
 // Sets default values
 AKiller::AKiller()
@@ -203,6 +204,42 @@ void AKiller::Interact(float Value)
 				SetActorLocation(FVector(InteractLocation->GetComponentLocation().X, InteractLocation->GetComponentLocation().Y, GetActorLocation().Z));
 
 				FVector ToTarget = InteractingActor->GetActorLocation() - GetActorLocation();
+				FRotator LookAtRotation = FRotator(0.0f, ToTarget.Rotation().Yaw, 0.0f);
+				SetActorRotation(LookAtRotation);
+
+				bInteracting = true;
+			}
+		}
+		// Pallet
+		else if (MinOverlappingActor && MinOverlappingActor->IsA(APallet::StaticClass()))
+		{
+			APallet* Pallet = Cast<APallet>(MinOverlappingActor);
+			if (Pallet && !Pallet->IsBroken() && Pallet->IsUsed())
+			{
+				Pallet->KillerInteract();
+			}
+
+			// Interact시 위치를 고정
+			USceneComponent* InteractLocation = nullptr;
+			float MinInteractDistance = 1000.0f;
+			if (!InteractLocation)
+			{
+				for (USceneComponent* InteractCharacterLocation : Pallet->InteractCharacterLocations)
+				{
+					float LocationDistance = FVector::Dist(GetActorLocation(), InteractCharacterLocation->GetComponentLocation());
+					if (MinInteractDistance >= LocationDistance)
+					{
+						MinInteractDistance = LocationDistance;
+						InteractLocation = InteractCharacterLocation;
+					}
+				}
+			}
+
+			if (Pallet->IsUsed())
+			{
+				SetActorLocation(FVector(InteractLocation->GetComponentLocation().X, InteractLocation->GetComponentLocation().Y, GetActorLocation().Z));
+
+				FVector ToTarget = Pallet->GetActorLocation() - GetActorLocation();
 				FRotator LookAtRotation = FRotator(0.0f, ToTarget.Rotation().Yaw, 0.0f);
 				SetActorRotation(LookAtRotation);
 

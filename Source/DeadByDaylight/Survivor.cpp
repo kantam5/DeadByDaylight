@@ -357,7 +357,7 @@ void ASurvivor::PullDown()
 				{
 					USceneComponent* MaxDistanceLocation = nullptr;
 					USceneComponent* MinDistanceLocation = nullptr;
-					if (!Pallet->GetUsed())
+					if (!Pallet->IsUsed())
 					{
 						float MaxInteractDistance = 0.0f;
 						float MinInteractDistance = 1000.0f;
@@ -393,7 +393,7 @@ void ASurvivor::PullDown()
 						WindowPalletInteractMoveLocation = FVector(MinDistanceLocation->GetComponentLocation().X, MinDistanceLocation->GetComponentLocation().Y, GetActorLocation().Z);
 						GetWorld()->GetTimerManager().SetTimer(PullDownTimerHandle, this, &ASurvivor::EndVaultMontage, PullDownMontageDelay);
 					}
-					else if (Pallet->GetUsed())
+					else if (Pallet->IsUsed())
 					{
 						float MaxInteractDistance = 0.0f;
 						float MinInteractDistance = 1000.0f;

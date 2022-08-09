@@ -28,7 +28,7 @@ AGenerator::AGenerator()
 	MaxRepairProgress = 5.0f;
 
 	BrokenProgress = 0.0f;
-	MaxBrokenProgress = 1.0f;
+	MaxBrokenProgress = 1.1f;
 
 	bRepaired = false;
 	bBroken = false;

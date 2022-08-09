@@ -23,13 +23,25 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
+	virtual void Tick(float DeltaTime) override;
+
 	virtual void Interact() override;
 
-	bool GetUsed() { return bUsed; }
+	bool IsUsed() { return bUsed; }
+
+	virtual void KillerInteract() override;
+
+	virtual void KillerEndInteract() override;
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Coponents", meta = (AllowPrivateAccess = "true"))
 	class UBoxComponent* BoxCollision;
 	
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Gameplay", meta = (AllowPrivateAccess = "true"))
+	float BrokenProgress;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Gameplay", meta = (AllowPrivateAccess = "true"))
+	float MaxBrokenProgress;
+
 	bool bUsed;
 };
