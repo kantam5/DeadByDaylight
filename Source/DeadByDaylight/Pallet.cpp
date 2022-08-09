@@ -14,7 +14,7 @@ APallet::APallet()
 	BrokenProgress = 0.0f;
 	MaxBrokenProgress = 1.1f;
 
-	bUsed = true;
+	bUsed = false;
 }
 
 void APallet::BeginPlay()

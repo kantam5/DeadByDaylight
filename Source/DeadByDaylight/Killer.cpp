@@ -18,7 +18,7 @@ AKiller::AKiller()
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->bUsePawnControlRotation = true;
-	Camera->SetupAttachment(GetMesh(), "Head");
+	// Camera->SetupAttachment(GetMesh(), TEXT("Head"));
 
 	WalkSpeed = 1400.0f;
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
@@ -29,13 +29,15 @@ void AKiller::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	// 생성자에서 호출 시 Head에 달리지 않음
+	Camera->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, "Head");
+	
 	Weapon = GetWorld()->SpawnActor<AWeapon>(WeaponClass);
 	if (Weapon)
 	{
 		Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("WeaponSocket"));
 		Weapon->SetOwner(this);
 	}
-
 }
 
 void AKiller::PostInitializeComponents()
