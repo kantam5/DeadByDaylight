@@ -9,6 +9,9 @@
 #include "InteractiveActor.h"
 #include "Generator.h"
 #include "Pallet.h"
+#include "Window.h"
+#include "Components/CapsuleComponent.h"
+#include "Survivor.h"
 
 // Sets default values
 AKiller::AKiller()
@@ -75,6 +78,8 @@ void AKiller::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 	PlayerInputComponent->BindAxis("Killer Interact", this, &AKiller::Interact);
 	PlayerInputComponent->BindAction("Killer Interact", EInputEvent::IE_Released, this, &AKiller::EndInteract);
+
+	PlayerInputComponent->BindAction("Vault", EInputEvent::IE_Pressed, this, &AKiller::ActionInteract);
 }
 
 
@@ -260,4 +265,113 @@ void AKiller::EndInteract()
 	}
 
 	bInteracting = false;
+}
+
+void AKiller::ActionInteract()
+{
+	GetOverlappingActors(OverlappingActors);
+	if (Controller != nullptr && Survivor && Survivor->IsCarried())
+	{
+		Survivor->SetActorEnableCollision(true);
+		Survivor->SetCarried(false);
+		Survivor->GetCharacterMovement()->GravityScale = 1.0f;
+		Survivor->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+
+		Survivor = nullptr;
+	}
+	else if (Controller != nullptr && !OverlappingActors.IsEmpty() && Survivor == nullptr)
+	{
+		// 가장 가까운 InteractingActor
+		AActor* MinOverlappingActor = nullptr;
+		float MinDistance = 5000.0f;
+
+		if (!OverlappingActors.IsEmpty())
+		{
+			for (AActor* OverlappingActor : OverlappingActors)
+			{
+				float ActorDistance = FVector::Dist(GetActorLocation(), OverlappingActor->GetActorLocation());
+				if (MinDistance > ActorDistance)
+				{
+					MinDistance = ActorDistance;
+					MinOverlappingActor = OverlappingActor;
+				}
+			}
+			if (MinOverlappingActor && MinOverlappingActor->IsA(AWindow::StaticClass()))
+			{
+				AWindow* Window = Cast<AWindow>(MinOverlappingActor);
+				if (Window)
+				{
+					USceneComponent* MoveLocation = nullptr;
+					USceneComponent* InteractLocation = nullptr;
+					float MaxInteractDistance = 0.0f;
+					float MinInteractDistance = 1000.0f;
+					for (USceneComponent* InteractCharacterLocation : Window->InteractCharacterLocations)
+					{
+						float LocationDistance = FVector::Dist(GetActorLocation(), InteractCharacterLocation->GetComponentLocation());
+						if (MaxInteractDistance <= LocationDistance)
+						{
+							MaxInteractDistance = LocationDistance;
+							MoveLocation = InteractCharacterLocation;
+						}
+						if (MinInteractDistance >= LocationDistance)
+						{
+							MinInteractDistance = LocationDistance;
+							InteractLocation = InteractCharacterLocation;
+						}
+					}
+
+					GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
+					GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+					SetActorLocation(FVector(InteractLocation->GetComponentLocation().X, InteractLocation->GetComponentLocation().Y, GetActorLocation().Z));
+
+					FVector ToTarget = MoveLocation->GetComponentLocation() - InteractLocation->GetComponentLocation();
+					FRotator LookAtRotation = FRotator(0.0f, ToTarget.Rotation().Yaw, 0.0f);
+					SetActorRotation(LookAtRotation);
+
+					GetCharacterMovement()->StopMovementImmediately();
+					APlayerController* PlayerController = Cast<APlayerController>(GetController());
+					PlayerController->SetIgnoreMoveInput(true);
+
+					FTimerHandle VaultTimerHandle;
+					float MontageDelay = KillerAnimInstance->PlayVaultMontage();
+					WindowPalletInteractMoveLocation = FVector(MoveLocation->GetComponentLocation().X, MoveLocation->GetComponentLocation().Y, GetActorLocation().Z);
+					GetWorld()->GetTimerManager().SetTimer(VaultTimerHandle, this, &AKiller::EndVaultMontage, MontageDelay);
+				}
+			}
+			else if (MinOverlappingActor && MinOverlappingActor->IsA(ASurvivor::StaticClass()))
+			{
+				Survivor = Cast<ASurvivor>(MinOverlappingActor);
+				if (Survivor->GetHp() == 1 && !Survivor->IsCarried())
+				{	
+					FTimerHandle VaultTimerHandle;
+					float MontageDelay = KillerAnimInstance->PlayLiftMontage();
+					GetWorld()->GetTimerManager().SetTimer(VaultTimerHandle, this, &AKiller::EndLiftMontage, MontageDelay);
+				}
+			}
+		}
+	}
+}
+
+void AKiller::EndVaultMontage()
+{
+	SetActorLocation(WindowPalletInteractMoveLocation);
+
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+
+	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+	PlayerController->SetIgnoreMoveInput(false);
+
+	WindowPalletInteractMoveLocation = GetActorLocation();
+}
+
+void AKiller::EndLiftMontage()
+{
+	Survivor->SetActorEnableCollision(false);
+
+	FDamageEvent DamageEvent;
+	Survivor->TakeDamage(2.0f, DamageEvent, GetController(), this);
+	Survivor->SetCarried(true);
+	Survivor->GetCharacterMovement()->GravityScale = 0.0f;
+	Survivor->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("SurvivorHangLocation"));
 }

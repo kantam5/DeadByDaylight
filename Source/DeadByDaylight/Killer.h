@@ -47,6 +47,12 @@ public:
 	void Interact(float Value);
 	void EndInteract();
 
+	void ActionInteract();
+
+	void EndVaultMontage();
+
+	void EndLiftMontage();
+
 	bool IsInteracting() { return bInteracting; }
 
 private:
@@ -72,4 +78,8 @@ private:
 	TArray<AActor*> OverlappingActors;
 
 	class AInteractiveActor* InteractingActor;
+
+	FVector WindowPalletInteractMoveLocation;
+
+	class ASurvivor* Survivor;
 };

@@ -74,9 +74,9 @@ void USurvivorStatComponent::SetMaxHp(int32 MaxHp)
 void USurvivorStatComponent::OnAttacked(float DamageAmount)
 {
 	Hp -= DamageAmount;
-	if (Hp <= 0)
+	if (Hp <= 1)
 	{
-		Hp = 0;
+		Hp = 1;
 	}
 
 	UE_LOG(LogTemp, Warning, TEXT("OnAttacked %d"), Hp);

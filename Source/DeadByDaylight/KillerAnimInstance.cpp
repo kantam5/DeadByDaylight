@@ -35,6 +35,30 @@ void UKillerAnimInstance::PlayAttackMontage()
 	}
 }
 
+float UKillerAnimInstance::PlayVaultMontage()
+{
+	if (!Montage_IsPlaying(VaultMontage))
+	{
+		return Montage_Play(VaultMontage);
+	}
+	else
+	{
+		return 0.0f;
+	}
+}
+
+float UKillerAnimInstance::PlayLiftMontage()
+{
+	if (!Montage_IsPlaying(LiftMontage))
+	{
+		return Montage_Play(LiftMontage);
+	}
+	else
+	{
+		return 0.0f;
+	}
+}
+
 // 몽타주에서 설정한 AttackHit
 void UKillerAnimInstance::AnimNotify_AttackHit()
 {

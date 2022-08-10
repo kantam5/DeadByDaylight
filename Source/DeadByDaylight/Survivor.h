@@ -26,6 +26,9 @@ public:
 	bool IsRunning();
 	bool IsInteracting();
 
+	void SetCarried(bool state) { bCarried = state; }
+	bool IsCarried() { return bCarried; }
+
 protected:
 	void MoveForward(float Value);
 	void MoveRight(float Value);
@@ -38,9 +41,6 @@ protected:
 
 	void Interact(float Value);
 	void EndInteract();
-
-	void Heal(float Value);
-	void EndHeal();
 
 	void Vault();
 	void EndVaultMontage();
@@ -91,6 +91,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Movement")
 	bool bInteracting;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Movement")
+	bool bCarried;
 
 	UPROPERTY(VisibleAnywhere)
 	class USurvivorStatComponent* Stat;

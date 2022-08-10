@@ -23,6 +23,10 @@ public:
 
 	void PlayAttackMontage();
 
+	float PlayVaultMontage();
+
+	float PlayLiftMontage();
+
 private:
 	UFUNCTION()
 	void AnimNotify_AttackHit();
@@ -39,6 +43,12 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Pawn, meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* AttackMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Pawn, meta = (AllowPrivateAccess = "true"))
+	UAnimMontage* VaultMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Pawn, meta = (AllowPrivateAccess = "true"))
+	UAnimMontage* LiftMontage;
 
 public:
 	FOnAttackHit OnAttackHit;

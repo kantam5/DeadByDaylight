@@ -69,6 +69,11 @@ void EmptyLinkFunctionForGeneratedCodeSurvivor() {}
 		static void NewProp_bInteracting_SetBit(void* Obj);
 		static const UECodeGen_Private::FBoolPropertyParams NewProp_bInteracting;
 #if WITH_METADATA
+		static const UECodeGen_Private::FMetaDataPairParam NewProp_bCarried_MetaData[];
+#endif
+		static void NewProp_bCarried_SetBit(void* Obj);
+		static const UECodeGen_Private::FBoolPropertyParams NewProp_bCarried;
+#if WITH_METADATA
 		static const UECodeGen_Private::FMetaDataPairParam NewProp_Stat_MetaData[];
 #endif
 		static const UECodeGen_Private::FObjectPropertyParams NewProp_Stat;
@@ -174,6 +179,17 @@ void EmptyLinkFunctionForGeneratedCodeSurvivor() {}
 	}
 	const UECodeGen_Private::FBoolPropertyParams Z_Construct_UClass_ASurvivor_Statics::NewProp_bInteracting = { "bInteracting", nullptr, (EPropertyFlags)0x0040000000010001, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, RF_Public|RF_Transient|RF_MarkAsNative, 1, sizeof(bool), sizeof(ASurvivor), &Z_Construct_UClass_ASurvivor_Statics::NewProp_bInteracting_SetBit, METADATA_PARAMS(Z_Construct_UClass_ASurvivor_Statics::NewProp_bInteracting_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_ASurvivor_Statics::NewProp_bInteracting_MetaData)) };
 #if WITH_METADATA
+	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_ASurvivor_Statics::NewProp_bCarried_MetaData[] = {
+		{ "Category", "Movement" },
+		{ "ModuleRelativePath", "Survivor.h" },
+	};
+#endif
+	void Z_Construct_UClass_ASurvivor_Statics::NewProp_bCarried_SetBit(void* Obj)
+	{
+		((ASurvivor*)Obj)->bCarried = 1;
+	}
+	const UECodeGen_Private::FBoolPropertyParams Z_Construct_UClass_ASurvivor_Statics::NewProp_bCarried = { "bCarried", nullptr, (EPropertyFlags)0x0040000000010001, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, RF_Public|RF_Transient|RF_MarkAsNative, 1, sizeof(bool), sizeof(ASurvivor), &Z_Construct_UClass_ASurvivor_Statics::NewProp_bCarried_SetBit, METADATA_PARAMS(Z_Construct_UClass_ASurvivor_Statics::NewProp_bCarried_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_ASurvivor_Statics::NewProp_bCarried_MetaData)) };
+#if WITH_METADATA
 	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_ASurvivor_Statics::NewProp_Stat_MetaData[] = {
 		{ "Category", "Survivor" },
 		{ "EditInline", "true" },
@@ -204,6 +220,7 @@ void EmptyLinkFunctionForGeneratedCodeSurvivor() {}
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ASurvivor_Statics::NewProp_RunSpeed,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ASurvivor_Statics::NewProp_bRunning,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ASurvivor_Statics::NewProp_bInteracting,
+		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ASurvivor_Statics::NewProp_bCarried,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ASurvivor_Statics::NewProp_Stat,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ASurvivor_Statics::NewProp_OverlappingActors_Inner,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ASurvivor_Statics::NewProp_OverlappingActors,
@@ -245,9 +262,9 @@ void EmptyLinkFunctionForGeneratedCodeSurvivor() {}
 		static const FClassRegisterCompiledInInfo ClassInfo[];
 	};
 	const FClassRegisterCompiledInInfo Z_CompiledInDeferFile_FID_DeadByDaylight_Source_DeadByDaylight_Survivor_h_Statics::ClassInfo[] = {
-		{ Z_Construct_UClass_ASurvivor, ASurvivor::StaticClass, TEXT("ASurvivor"), &Z_Registration_Info_UClass_ASurvivor, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ASurvivor), 3387694026U) },
+		{ Z_Construct_UClass_ASurvivor, ASurvivor::StaticClass, TEXT("ASurvivor"), &Z_Registration_Info_UClass_ASurvivor, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ASurvivor), 1399923932U) },
 	};
-	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_DeadByDaylight_Source_DeadByDaylight_Survivor_h_2442158375(TEXT("/Script/DeadByDaylight"),
+	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_DeadByDaylight_Source_DeadByDaylight_Survivor_h_915125853(TEXT("/Script/DeadByDaylight"),
 		Z_CompiledInDeferFile_FID_DeadByDaylight_Source_DeadByDaylight_Survivor_h_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_DeadByDaylight_Source_DeadByDaylight_Survivor_h_Statics::ClassInfo),
 		nullptr, 0,
 		nullptr, 0);
