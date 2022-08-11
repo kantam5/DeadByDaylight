@@ -91,6 +91,17 @@ void ASurvivor::PostInitializeComponents()
 void ASurvivor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (bCarried == true)
+	{
+		GetCapsuleComponent()->SetGenerateOverlapEvents(false);
+		SphereCollision->SetGenerateOverlapEvents(false);
+	}
+	else
+	{
+		GetCapsuleComponent()->SetGenerateOverlapEvents(true);
+		SphereCollision->SetGenerateOverlapEvents(true);
+	}
 }
 
 // Called to bind functionality to input

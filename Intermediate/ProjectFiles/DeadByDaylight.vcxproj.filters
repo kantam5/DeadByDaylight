@@ -13,6 +13,7 @@
     </None>
     <None Include="..\..\.gitattributes" />
     <None Include="..\..\.gitignore" />
+    <None Include="..\..\KILLERANIMINSTANCE.ipch" />
     <None Include="..\..\SURVIVOR.ipch" />
     <None Include="..\..\SURVIVORANIMINSTANCE.ipch" />
     <Filter Include="Config">
@@ -70,6 +71,12 @@
       <Filter>Source\DeadByDaylight</Filter>
     </ClCompile>
     <ClInclude Include="..\..\Source\DeadByDaylight\Generator.h">
+      <Filter>Source\DeadByDaylight</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\DeadByDaylight\Hook.cpp">
+      <Filter>Source\DeadByDaylight</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\DeadByDaylight\Hook.h">
       <Filter>Source\DeadByDaylight</Filter>
     </ClInclude>
     <ClCompile Include="..\..\Source\DeadByDaylight\InteractiveActor.cpp">

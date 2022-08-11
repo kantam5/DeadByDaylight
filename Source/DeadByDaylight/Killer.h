@@ -74,6 +74,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Movement")
 	bool bInteracting = false;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Movement")
+	bool bCarrying = false;
+
 	UPROPERTY(VisibleAnywhere)
 	TArray<AActor*> OverlappingActors;
 
