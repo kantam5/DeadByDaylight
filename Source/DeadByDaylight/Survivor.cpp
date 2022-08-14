@@ -13,6 +13,9 @@
 #include "SurvivorAnimInstance.h"
 #include "Pallet.h"
 #include "Components/SphereComponent.h"
+#include "Hook.h"
+#include "Generator.h"
+#include "ExitDoor.h"
 
 // Sets default values
 ASurvivor::ASurvivor()
@@ -102,6 +105,15 @@ void ASurvivor::Tick(float DeltaTime)
 		GetCapsuleComponent()->SetGenerateOverlapEvents(true);
 		SphereCollision->SetGenerateOverlapEvents(true);
 	}
+
+	if (bHanged == true)
+	{
+		GetController()->SetIgnoreMoveInput(true);
+	}
+	else
+	{
+		GetController()->SetIgnoreMoveInput(false);
+	}
 }
 
 // Called to bind functionality to input
@@ -180,7 +192,7 @@ void ASurvivor::Interact(float Value)
 	if ((Controller != nullptr) && (Value != 0.0f) && !OverlappingActors.IsEmpty())
 	{
 		// 가장 가까운 InteractingActor
-		AActor* InteractingActor = nullptr;
+		AActor* MinOverlappingActor = nullptr;
 		float MinDistance = 5000.0f;
 
 		if (!OverlappingActors.IsEmpty())
@@ -191,17 +203,20 @@ void ASurvivor::Interact(float Value)
 				if (MinDistance > ActorDistance)
 				{
 					MinDistance = ActorDistance;
-					InteractingActor = OverlappingActor;
+					MinOverlappingActor = OverlappingActor;
 				}
 			}
 		}
 
-		if (InteractingActor && InteractingActor->IsA(AInteractiveActor::StaticClass()) && Stat->GetHp() >= 2)
+		// Generator
+		// Hook도 먹혀서 고쳐야함
+		//////
+		if (MinOverlappingActor && (MinOverlappingActor->IsA(AGenerator::StaticClass()) || MinOverlappingActor->IsA(AExitDoor::StaticClass())) && Stat->GetHp() >= 2)
 		{
-			AInteractiveActor* Actor = Cast<AInteractiveActor>(InteractingActor);
-			if (Actor)
+			InteractingActor = Cast<AInteractiveActor>(MinOverlappingActor);
+			if (InteractingActor)
 			{
-				Actor->Interact();
+				InteractingActor->Interact();
 			}
 
 			// Interact시 Survivor의 위치를 고정
@@ -209,7 +224,7 @@ void ASurvivor::Interact(float Value)
 			float MinInteractDistance = 1000.0f;
 			if (!InteractLocation)
 			{
-				for (USceneComponent* InteractCharacterLocation : Actor->InteractCharacterLocations)
+				for (USceneComponent* InteractCharacterLocation : InteractingActor->InteractCharacterLocations)
 				{
 					float LocationDistance = FVector::Dist(GetActorLocation(), InteractCharacterLocation->GetComponentLocation());
 					if (MinInteractDistance >= LocationDistance)
@@ -222,15 +237,16 @@ void ASurvivor::Interact(float Value)
 
 			SetActorLocation(FVector(InteractLocation->GetComponentLocation().X, InteractLocation->GetComponentLocation().Y, GetActorLocation().Z));
 
-			FVector ToTarget = Actor->GetActorLocation() - GetActorLocation();
+			FVector ToTarget = InteractingActor->GetActorLocation() - GetActorLocation();
 			FRotator LookAtRotation = FRotator(0.0f, ToTarget.Rotation().Yaw, 0.0f);
 			SetActorRotation(LookAtRotation);
 
 			bInteracting = true;
 		}
-		else if (InteractingActor && InteractingActor->IsA(ASurvivor::StaticClass()) && Stat->GetHp() >= 2)
+		// Heal Survivor
+		else if (MinOverlappingActor && MinOverlappingActor->IsA(ASurvivor::StaticClass()) && Stat->GetHp() >= 2)
 		{
-			ASurvivor* WoundedSurvivor = Cast<ASurvivor>(InteractingActor);
+			ASurvivor* WoundedSurvivor = Cast<ASurvivor>(MinOverlappingActor);
 
 			if (WoundedSurvivor)
 			{
@@ -248,11 +264,39 @@ void ASurvivor::Interact(float Value)
 				}
 			}
 		}
+		// Hook
+		else if (MinOverlappingActor && MinOverlappingActor->IsA(AHook::StaticClass()) && Stat->GetHp() >= 2)
+		{
+			InteractingActor = Cast<AInteractiveActor>(MinOverlappingActor);
+			AHook* Hook = Cast<AHook>(InteractingActor);
+			if (Hook && Hook->IsHanging())
+			{
+				Hook->Interact();
+
+				GetCharacterMovement()->StopMovementImmediately();
+
+				FVector ToTarget = InteractingActor->GetActorLocation() - GetActorLocation();
+				FRotator LookAtRotation = FRotator(0.0f, ToTarget.Rotation().Yaw, 0.0f);
+				SetActorRotation(LookAtRotation);
+
+				bInteracting = true;
+			}
+		}
 	}
 }
 
 void ASurvivor::EndInteract()
 {
+	// 치료에는 InteractingActor가 비어있다.
+	if (InteractingActor)
+	{
+		if (InteractingActor->IsA(AHook::StaticClass()))
+		{
+			InteractingActor->EndInteract();
+			InteractingActor = nullptr;
+		}
+	}
+
 	bInteracting = false;
 }
 
@@ -266,7 +310,7 @@ void ASurvivor::Vault()
 	if (Controller != nullptr && !OverlappingActors.IsEmpty())
 	{
 		// 가장 가까운 InteractingActor
-		AActor* InteractingActor = nullptr;
+		AActor* MinOverlappingActor = nullptr;
 		AWindow* Window = nullptr;
 		float MinDistance = 5000.0f;
 
@@ -278,12 +322,12 @@ void ASurvivor::Vault()
 				if (MinDistance > ActorDistance)
 				{
 					MinDistance = ActorDistance;
-					InteractingActor = OverlappingActor;
+					MinOverlappingActor = OverlappingActor;
 				}
 			}
-			if (InteractingActor)
+			if (MinOverlappingActor)
 			{
-				Window = Cast<AWindow>(InteractingActor);
+				Window = Cast<AWindow>(MinOverlappingActor);
 				if (Window)
 				{
 					USceneComponent* MoveLocation = nullptr;
@@ -346,7 +390,7 @@ void ASurvivor::PullDown()
 	if (Controller != nullptr && !OverlappingActors.IsEmpty())
 	{
 		// 가장 가까운 InteractingActor
-		AActor* InteractingActor = nullptr;
+		AActor* MinOverlappingActor = nullptr;
 		APallet* Pallet = nullptr;
 		float MinDistance = 5000.0f;
 
@@ -358,12 +402,12 @@ void ASurvivor::PullDown()
 				if (MinDistance > ActorDistance)
 				{
 					MinDistance = ActorDistance;
-					InteractingActor = OverlappingActor;
+					MinOverlappingActor = OverlappingActor;
 				}
 			}
-			if (InteractingActor)
+			if (MinOverlappingActor)
 			{
-				Pallet = Cast<APallet>(InteractingActor);
+				Pallet = Cast<APallet>(MinOverlappingActor);
 				if (Pallet)
 				{
 					USceneComponent* MaxDistanceLocation = nullptr;

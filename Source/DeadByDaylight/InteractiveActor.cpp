@@ -48,6 +48,11 @@ void AInteractiveActor::Interact()
 	
 }
 
+void AInteractiveActor::EndInteract()
+{
+
+}
+
 void AInteractiveActor::KillerInteract()
 {
 

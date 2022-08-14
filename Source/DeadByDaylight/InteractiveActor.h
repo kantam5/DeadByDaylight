@@ -28,9 +28,9 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void Interact();
+	virtual void EndInteract();
 
 	virtual void KillerInteract();
-
 	virtual void KillerEndInteract();
 
 	virtual bool IsBroken();

@@ -17,13 +17,15 @@ class DEADBYDAYLIGHT_API AHook : public AInteractiveActor
 public:
 	AHook();
 
-	virtual void KillerInteract() override;
+	virtual void Interact() override;
+	virtual void EndInteract() override;
 
+	virtual void KillerInteract() override;
 	virtual void KillerEndInteract() override;
 
 	void SetHangingSurvivor(class ASurvivor* Survivor);
 
-	bool GetHanging() { return bHanging; }
+	bool IsHanging() { return bHanging; }
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Coponents", meta = (AllowPrivateAccess = "true"))
@@ -31,6 +33,12 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Coponents", meta = (AllowPrivateAccess = "true"))
 	class USphereComponent* SphereCollision;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Gameplay", meta = (AllowPrivateAccess = "true"))
+	float SaveProgress;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Gameplay", meta = (AllowPrivateAccess = "true"))
+	float MaxSaveProgress;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Gameplay", meta = (AllowPrivateAccess = "true"))
 	float HangProgress;

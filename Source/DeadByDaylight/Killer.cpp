@@ -14,21 +14,17 @@
 #include "Survivor.h"
 #include "Hook.h"
 
-// Sets default values
 AKiller::AKiller()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->bUsePawnControlRotation = true;
-	// Camera->SetupAttachment(GetMesh(), TEXT("Head"));
 
 	WalkSpeed = 1400.0f;
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 }
 
-// Called when the game starts or when spawned
 void AKiller::BeginPlay()
 {
 	Super::BeginPlay();
@@ -56,15 +52,21 @@ void AKiller::PostInitializeComponents()
 	}
 }
 
-
-// Called every frame
 void AKiller::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (bInteracting == true || bActionInteracting == true)
+	{
+		GetController()->SetIgnoreLookInput(true);
+		GetController()->SetIgnoreMoveInput(true);
+	}
+	else if (bInteracting == false && bActionInteracting == false)
+	{
+		GetController()->ResetIgnoreInputFlags();
+	}
 }
 
-// Called to bind functionality to input
 void AKiller::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -166,7 +168,6 @@ void AKiller::Interact(float Value)
 
 	if ((Controller != nullptr) && (Value != 0.0f) && !OverlappingActors.IsEmpty())
 	{
-		// 가장 가까운 InteractingActor
 		AActor* MinOverlappingActor = nullptr;
 		float MinDistance = 5000.0f;
 
@@ -191,7 +192,6 @@ void AKiller::Interact(float Value)
 				InteractingActor->KillerInteract();
 			}
 
-			// Interact시 위치를 고정
 			USceneComponent* InteractLocation = nullptr;
 			float MinInteractDistance = 1000.0f;
 			if (!InteractLocation)
@@ -209,11 +209,13 @@ void AKiller::Interact(float Value)
 
 			if (!InteractingActor->IsBroken())
 			{
+				bInteracting = true;
 				SetActorLocation(FVector(InteractLocation->GetComponentLocation().X, InteractLocation->GetComponentLocation().Y, GetActorLocation().Z));
 
 				FVector ToTarget = InteractingActor->GetActorLocation() - GetActorLocation();
-				FRotator LookAtRotation = FRotator(0.0f, ToTarget.Rotation().Yaw, 0.0f);
-				SetActorRotation(LookAtRotation);
+				FRotator LookAtRotation = FRotator(ToTarget.Rotation());
+
+				GetController()->SetControlRotation(LookAtRotation);
 
 				bInteracting = true;
 			}
@@ -227,7 +229,6 @@ void AKiller::Interact(float Value)
 				Pallet->KillerInteract();
 			}
 
-			// Interact시 위치를 고정
 			USceneComponent* InteractLocation = nullptr;
 			float MinInteractDistance = 1000.0f;
 			if (!InteractLocation)
@@ -248,8 +249,9 @@ void AKiller::Interact(float Value)
 				SetActorLocation(FVector(InteractLocation->GetComponentLocation().X, InteractLocation->GetComponentLocation().Y, GetActorLocation().Z));
 
 				FVector ToTarget = Pallet->GetActorLocation() - GetActorLocation();
-				FRotator LookAtRotation = FRotator(0.0f, ToTarget.Rotation().Yaw, 0.0f);
-				SetActorRotation(LookAtRotation);
+				FRotator LookAtRotation = FRotator(ToTarget.Rotation());
+
+				GetController()->SetControlRotation(LookAtRotation);
 
 				bInteracting = true;
 			}
@@ -259,12 +261,10 @@ void AKiller::Interact(float Value)
 		else if (MinOverlappingActor && MinOverlappingActor->IsA(AHook::StaticClass()) && bCarrying && Survivor)
 		{
 			AHook* Hook = Cast<AHook>(MinOverlappingActor);
-			if (Hook && !Hook->GetHanging())
+			if (Hook && !Hook->IsHanging())
 			{
-				UE_LOG(LogTemp, Warning, TEXT("Hang Interating"));
 				Hook->SetHangingSurvivor(Survivor);
 				Hook->KillerInteract();
-				// Hook의 소켓에 SUrvivor장착
 			}
 
 			// Interact시 위치를 고정
@@ -287,8 +287,10 @@ void AKiller::Interact(float Value)
 
 			FVector ToTarget = Hook->GetActorLocation() - GetActorLocation();
 			FRotator LookAtRotation = FRotator(0.0f, ToTarget.Rotation().Yaw, 0.0f);
-			SetActorRotation(LookAtRotation);
 
+			GetController()->SetControlRotation(LookAtRotation);
+
+			bInteracting = true;
 			// hook 애니메이션
 		}
 	}
@@ -374,12 +376,11 @@ void AKiller::ActionInteract()
 				SetActorLocation(FVector(InteractLocation->GetComponentLocation().X, InteractLocation->GetComponentLocation().Y, GetActorLocation().Z));
 
 				FVector ToTarget = MoveLocation->GetComponentLocation() - InteractLocation->GetComponentLocation();
-				FRotator LookAtRotation = FRotator(0.0f, ToTarget.Rotation().Yaw, 0.0f);
-				SetActorRotation(LookAtRotation);
+				FRotator LookAtRotation = FRotator(ToTarget.Rotation());
+				GetController()->SetControlRotation(LookAtRotation);
 
+				bActionInteracting = true;
 				GetCharacterMovement()->StopMovementImmediately();
-				APlayerController* PlayerController = Cast<APlayerController>(GetController());
-				PlayerController->SetIgnoreMoveInput(true);
 
 				FTimerHandle VaultTimerHandle;
 				float MontageDelay = KillerAnimInstance->PlayVaultMontage();
@@ -393,9 +394,18 @@ void AKiller::ActionInteract()
 			Survivor = Cast<ASurvivor>(MinOverlappingActor);
 			if (Survivor->GetHp() == 1 && !Survivor->IsCarried())
 			{	
+				FVector ToTarget = Survivor->GetActorLocation() - GetActorLocation();
+				FRotator LookAtRotation = FRotator(ToTarget.Rotation());
+				GetController()->SetControlRotation(LookAtRotation);
+
+				bActionInteracting = true;
+				GetCharacterMovement()->StopMovementImmediately();
+
+				// carry 애니메이션
 				bCarrying = true;
 				FTimerHandle VaultTimerHandle;
 				float MontageDelay = KillerAnimInstance->PlayLiftMontage();
+
 				GetWorld()->GetTimerManager().SetTimer(VaultTimerHandle, this, &AKiller::EndLiftMontage, MontageDelay);
 			}
 		}
@@ -409,8 +419,7 @@ void AKiller::EndVaultMontage()
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 
-	APlayerController* PlayerController = Cast<APlayerController>(GetController());
-	PlayerController->SetIgnoreMoveInput(false);
+	bActionInteracting = false;
 
 	WindowPalletInteractMoveLocation = GetActorLocation();
 }
@@ -419,6 +428,7 @@ void AKiller::EndLiftMontage()
 {
 	Survivor->SetActorEnableCollision(false);
 
+	bActionInteracting = false;
 	FDamageEvent DamageEvent;
 	Survivor->TakeDamage(2.0f, DamageEvent, GetController(), this);
 	Survivor->SetCarried(true);

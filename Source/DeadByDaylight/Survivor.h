@@ -107,6 +107,8 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	TArray<AActor*> OverlappingActors;
 
+	class AInteractiveActor* InteractingActor;
+
 	UPROPERTY()
 	class USurvivorAnimInstance* SurvivorAnimInstance;
 

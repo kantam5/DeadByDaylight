@@ -20,6 +20,30 @@ AHook::AHook()
 	bHanging = false;
 }
 
+void AHook::Interact()
+{
+	if (SaveProgress < MaxSaveProgress && bHanging == true)
+	{
+		Super::Interact();
+		SaveProgress += FApp::GetDeltaTime() * 1.0f;
+	}
+	else if (bHanging != false)
+	{
+		SaveProgress = 0.0f;
+		bHanging = false;
+
+		// 걸려있는 생존자 떨어뜨리기
+		HangingSurvivor->SetActorEnableCollision(true);
+		HangingSurvivor->GetCharacterMovement()->GravityScale = 1.0f;
+		HangingSurvivor->SetHanged(false);
+	}
+}
+
+void AHook::EndInteract()
+{
+	SaveProgress = 0.0f;
+}
+
 void AHook::KillerInteract()
 {
 	if (HangProgress < MaxHangProgress && bHanging == false)
