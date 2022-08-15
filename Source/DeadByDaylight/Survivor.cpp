@@ -155,6 +155,20 @@ float ASurvivor::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
 	return DamageAmount;
 }
 
+// 여기도 처리
+void ASurvivor::SetHanged(bool state)
+{
+	bHanged = state;
+	if (state == true)
+	{
+		Stat->IncreaseHangedCount();
+	}
+	else if (state == false)
+	{
+		
+	}
+}
+
 void ASurvivor::MoveForward(float Value)
 {
 	if ((Controller != nullptr) && (Value != 0.0f))
@@ -208,9 +222,7 @@ void ASurvivor::Interact(float Value)
 			}
 		}
 
-		// Generator
-		// Hook도 먹혀서 고쳐야함
-		//////
+		// Generator, ExitDoor
 		if (MinOverlappingActor && (MinOverlappingActor->IsA(AGenerator::StaticClass()) || MinOverlappingActor->IsA(AExitDoor::StaticClass())) && Stat->GetHp() >= 2)
 		{
 			InteractingActor = Cast<AInteractiveActor>(MinOverlappingActor);

@@ -29,7 +29,7 @@ public:
 	void SetCarried(bool state) { bCarried = state; }
 	bool IsCarried() { return bCarried; }
 
-	void SetHanged(bool state) { bHanged = state; }
+	void SetHanged(bool state); // { bHanged = state; }
 	bool IsHanged() { return bHanged; }
 
 protected:
@@ -61,6 +61,8 @@ public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+	class USurvivorStatComponent* GetStat() { return Stat; }
 
 	int32 GetHp() { return Hp; }
 	void RecoverHp() { Hp++; }
@@ -102,7 +104,7 @@ private:
 	bool bHanged;
 
 	UPROPERTY(VisibleAnywhere)
-	class USurvivorStatComponent* Stat;
+	USurvivorStatComponent* Stat;
 
 	UPROPERTY(VisibleAnywhere)
 	TArray<AActor*> OverlappingActors;

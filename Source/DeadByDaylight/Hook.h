@@ -17,6 +17,8 @@ class DEADBYDAYLIGHT_API AHook : public AInteractiveActor
 public:
 	AHook();
 
+	virtual void Tick(float DeltaTime) override;
+
 	virtual void Interact() override;
 	virtual void EndInteract() override;
 
@@ -40,11 +42,14 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Gameplay", meta = (AllowPrivateAccess = "true"))
 	float MaxSaveProgress;
 
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Gameplay", meta = (AllowPrivateAccess = "true"))
 	float HangProgress;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Gameplay", meta = (AllowPrivateAccess = "true"))
 	float MaxHangProgress;
+
+	int32 SurvivorHangedCount;
 
 	bool bHanging;
 

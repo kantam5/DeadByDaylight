@@ -5,6 +5,7 @@
 #include "Survivor.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/SphereComponent.h"
+#include "SurvivorStatComponent.h"
 
 AHook::AHook()
 {
@@ -17,7 +18,23 @@ AHook::AHook()
 	HangProgress = 4.0f;
 	MaxHangProgress = 5.0f;
 
+	SurvivorHangedCount = 0;
+
 	bHanging = false;
+}
+
+void AHook::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (bHanging)
+	{
+		HangingSurvivor->GetStat()->IncreaseHangingTime();
+	}
+	else
+	{
+		HangingSurvivor = nullptr;
+	}
 }
 
 void AHook::Interact()
@@ -62,6 +79,7 @@ void AHook::KillerInteract()
 		HangingSurvivor->SetActorLocation(SurvivorHookedLocation->GetComponentLocation());
 		HangingSurvivor->SetActorRotation(SurvivorHookedLocation->GetComponentRotation());
 		HangingSurvivor->SetHanged(true);
+
 	}
 }
 

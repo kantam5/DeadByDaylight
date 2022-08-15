@@ -34,6 +34,10 @@ public:
 
 	void Recover();
 
+	void IncreaseHangingTime();
+
+	int32 IncreaseHangedCount();
+
 private:
 	UPROPERTY(VisibleAnywhere, Category = Stat, Meta = (AllowPrivateAccess = true))
 	int32 Hp;
@@ -44,11 +48,21 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = Stat, Meta = (AllowPrivateAccess = true))
 	float RunSpeed;
 
+	UPROPERTY(VisibleAnywhere, Category = Stat, Meta = (AllowPrivateAccess = true))
+	int32 HangedCount;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Stat, meta = (AllowPrivateAccess = "true"))
-	float MaxRepairProgress;
+	float MaxRecoverProgress;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Stat, meta = (AllowPrivateAccess = "true"))
 	float RecoverProgress;
 
 	bool bRecovered;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Stat, meta = (AllowPrivateAccess = "true"))
+	float MaxHangingTime;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Stat, meta = (AllowPrivateAccess = "true"))
+	float HangingTime;
+
 };

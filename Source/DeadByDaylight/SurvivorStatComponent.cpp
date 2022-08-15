@@ -17,8 +17,9 @@ USurvivorStatComponent::USurvivorStatComponent()
 
 	Hp = 3;
 
-	MaxRepairProgress = 2.0f;
+	MaxRecoverProgress = 2.0f;
 	RecoverProgress = 0.0f;
+
 }
 
 
@@ -67,6 +68,7 @@ void USurvivorStatComponent::SetMaxHp(int32 MaxHp)
 			Hp = StatData->MaxHp;
 			WalkSpeed = StatData->WalkSpeed;
 			RunSpeed = StatData->RunSpeed;
+			HangedCount = StatData->HangedCount;
 		}
 	}
 }
@@ -84,7 +86,7 @@ void USurvivorStatComponent::OnAttacked(float DamageAmount)
 
 void USurvivorStatComponent::Recover()
 {
-	if (RecoverProgress < MaxRepairProgress && !bRecovered)
+	if (RecoverProgress < MaxRecoverProgress && !bRecovered)
 	{
 		RecoverProgress += FApp::GetDeltaTime() * 1.0f;
 	}
@@ -96,4 +98,33 @@ void USurvivorStatComponent::Recover()
 		ASurvivor* Owner = Cast<ASurvivor>(GetOwner());
 		Owner->RecoverHp();
 	}
+}
+
+void USurvivorStatComponent::IncreaseHangingTime()
+{
+	// 말리기 처리
+	if (HangingTime < MaxHangingTime && HangedCount < 3)
+	{
+		HangingTime += FApp::GetDeltaTime() * 1.0f;
+	}
+	else if (HangedCount < 3)
+	{
+		IncreaseHangedCount();
+		HangingTime = 0.0f;
+	}
+}
+
+int32 USurvivorStatComponent::IncreaseHangedCount()
+{
+	HangedCount++;
+	if (HangedCount >= 3)
+	{
+		HangedCount = 3;
+		Hp = 0;
+		// 생존자 삭제하고 return
+		// ui도 실행
+		return HangedCount;
+	}
+
+	return HangedCount;
 }

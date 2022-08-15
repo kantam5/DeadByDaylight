@@ -20,6 +20,9 @@ struct FSurvivorData : public FTableRowBase
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 RunSpeed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 HangedCount;
 };
 
 /**
