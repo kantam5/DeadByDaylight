@@ -36,7 +36,13 @@ public:
 	void MoveForward(float Value);
 	void MoveRight(float Value);
 
+	void AttackAxis(float Value);
+
 	void Attack();
+	void LungeAttack();
+	void EndAttack();
+	void EndAttackMontage();
+	void EndAttackDelay();
 
 	UFUNCTION()
 	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
@@ -88,4 +94,8 @@ private:
 	FVector WindowPalletInteractMoveLocation;
 
 	class ASurvivor* Survivor;
+
+	bool bHoldingAttack;
+
+	float HoldingAttack;
 };

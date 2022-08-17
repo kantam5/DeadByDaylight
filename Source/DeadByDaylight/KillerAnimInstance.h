@@ -21,7 +21,7 @@ public:
 
 	virtual void NativeUpdateAnimation(float DeltaSeconds);
 
-	void PlayAttackMontage();
+	float PlayAttackMontage();
 
 	float PlayVaultMontage();
 

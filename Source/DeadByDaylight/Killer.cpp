@@ -13,6 +13,8 @@
 #include "Components/CapsuleComponent.h"
 #include "Survivor.h"
 #include "Hook.h"
+#include "Kismet/KismetSystemLibrary.h"
+#include "Misc/App.h"
 
 AKiller::AKiller()
 {
@@ -23,6 +25,8 @@ AKiller::AKiller()
 
 	WalkSpeed = 1400.0f;
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+
+	HoldingAttack = 0.0f;
 }
 
 void AKiller::BeginPlay()
@@ -77,7 +81,10 @@ void AKiller::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAxis("Turn Right / Left Mouse", this, &APawn::AddControllerYawInput);
 	PlayerInputComponent->BindAxis("Look Up / Down Mouse", this, &APawn::AddControllerPitchInput);
 
-	PlayerInputComponent->BindAction("Attack", EInputEvent::IE_Pressed, this, &AKiller::Attack);
+	PlayerInputComponent->BindAxis("Attack", this, &AKiller::AttackAxis);
+	// PlayerInputComponent->BindAction("Attack", EInputEvent::IE_Pressed, this, &AKiller::Attack);
+	PlayerInputComponent->BindAction("Attack", EInputEvent::IE_Released, this, &AKiller::EndAttack);
+	// PlayerInputComponent->BindAction("LungeAttack", EInputEvent::IE_Repeat, this, &AKiller::LungeAttack);
 
 	PlayerInputComponent->BindAxis("Killer Interact", this, &AKiller::Interact);
 	PlayerInputComponent->BindAction("Killer Interact", EInputEvent::IE_Released, this, &AKiller::EndInteract);
@@ -115,6 +122,22 @@ void AKiller::MoveRight(float Value)
 	}
 }
 
+void AKiller::AttackAxis(float Value)
+{
+	if ((Controller != nullptr) && (Value != 0.0f))
+	{
+		if (HoldingAttack < 0.4f)
+		{
+			HoldingAttack += FApp::GetDeltaTime() * 1.0f;
+		}
+		else if (bHoldingAttack != true)
+		{
+			bHoldingAttack = true;
+			LungeAttack();
+		}
+	}
+}
+
 void AKiller::Attack()
 {
 	if (bAttacking == true)
@@ -122,9 +145,61 @@ void AKiller::Attack()
 		return;
 	}
 
-	KillerAnimInstance->PlayAttackMontage();
+	bHoldingAttack = true;
+
+	FLatentActionInfo Info;
+	Info.CallbackTarget = this;
+	Info.ExecutionFunction = FName("LungeAttack");
+	Info.Linkage = 0;
+	UKismetSystemLibrary::RetriggerableDelay(this, 1.0f, Info);
+
+	if (!bHoldingAttack)
+	{
+		KillerAnimInstance->PlayAttackMontage();
+	}
 
 	bAttacking = true;
+}
+
+void AKiller::LungeAttack()
+{
+	GetCharacterMovement()->MaxWalkSpeed = 3000.0f;
+
+	// 아니면 누르는 순간 속도를 늘려주고 
+	// FVector LaunchVector = GetActorForwardVector() * 5000.0f;
+	// LaunchCharacter(LaunchVector, false, false);
+
+	FTimerHandle AttackTimerHandle;
+	float MontageDelay = KillerAnimInstance->PlayAttackMontage() - 0.2f;
+	GetWorld()->GetTimerManager().SetTimer(AttackTimerHandle, this, &AKiller::EndAttackMontage, MontageDelay);
+}
+
+void AKiller::EndAttack()
+{
+	if (HoldingAttack < 0.4f)
+	{
+		FTimerHandle AttackTimerHandle;
+		float MontageDelay = KillerAnimInstance->PlayAttackMontage() - 0.2f;
+		GetWorld()->GetTimerManager().SetTimer(AttackTimerHandle, this, &AKiller::EndAttackMontage, MontageDelay);
+	}
+
+	bHoldingAttack = false;
+	HoldingAttack = 0.0f;
+}
+
+void AKiller::EndAttackMontage()
+{
+	GetCharacterMovement()->MaxWalkSpeed = 400.0f;
+
+	// hit result에 따라 애니메이션 호출
+	FTimerHandle AttackDelayTimerHandle;
+	float AttackDelay = 1.0f;
+	GetWorld()->GetTimerManager().SetTimer(AttackDelayTimerHandle, this, &AKiller::EndAttackDelay, AttackDelay);
+}
+
+void AKiller::EndAttackDelay()
+{
+	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 }
 
 void AKiller::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)

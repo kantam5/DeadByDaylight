@@ -79,7 +79,6 @@ void AHook::KillerInteract()
 		HangingSurvivor->SetActorLocation(SurvivorHookedLocation->GetComponentLocation());
 		HangingSurvivor->SetActorRotation(SurvivorHookedLocation->GetComponentRotation());
 		HangingSurvivor->SetHanged(true);
-
 	}
 }
 

@@ -27,11 +27,15 @@ void UKillerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	}
 }
 
-void UKillerAnimInstance::PlayAttackMontage()
+float UKillerAnimInstance::PlayAttackMontage()
 {
 	if (!Montage_IsPlaying(AttackMontage))
 	{
-		Montage_Play(AttackMontage, 1.0f);
+		return Montage_Play(AttackMontage, 1.0f);
+	}
+	else
+	{
+		return 0.0f;
 	}
 }
 
