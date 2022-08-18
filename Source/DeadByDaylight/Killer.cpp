@@ -26,6 +26,7 @@ AKiller::AKiller()
 	WalkSpeed = 1400.0f;
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 
+	bCanAttack = true;
 	HoldingAttack = 0.0f;
 }
 
@@ -124,7 +125,7 @@ void AKiller::MoveRight(float Value)
 
 void AKiller::AttackAxis(float Value)
 {
-	if ((Controller != nullptr) && (Value != 0.0f))
+	if ((Controller != nullptr) && (Value != 0.0f) && bCanAttack)
 	{
 		if (HoldingAttack < 0.4f)
 		{
@@ -163,21 +164,30 @@ void AKiller::Attack()
 
 void AKiller::LungeAttack()
 {
-	GetCharacterMovement()->MaxWalkSpeed = 3000.0f;
+	if (bCanAttack)
+	{
+		bCanAttack = false;
+		GetCharacterMovement()->MaxWalkSpeed = 3000.0f;
 
-	// 아니면 누르는 순간 속도를 늘려주고 
-	// FVector LaunchVector = GetActorForwardVector() * 5000.0f;
-	// LaunchCharacter(LaunchVector, false, false);
+		// 아니면 누르는 순간 속도를 늘려주고 
+		// FVector LaunchVector = GetActorForwardVector() * 5000.0f;
+		// LaunchCharacter(LaunchVector, false, false);
 
-	FTimerHandle AttackTimerHandle;
-	float MontageDelay = KillerAnimInstance->PlayAttackMontage() - 0.2f;
-	GetWorld()->GetTimerManager().SetTimer(AttackTimerHandle, this, &AKiller::EndAttackMontage, MontageDelay);
+		// 몽타주 중간에 launch
+
+		// 애니매이션을 길게
+
+		FTimerHandle AttackTimerHandle;
+		float MontageDelay = KillerAnimInstance->PlayAttackMontage() - 0.2f;
+		GetWorld()->GetTimerManager().SetTimer(AttackTimerHandle, this, &AKiller::EndAttackMontage, MontageDelay);
+	}
 }
 
 void AKiller::EndAttack()
 {
-	if (HoldingAttack < 0.4f)
+	if (HoldingAttack < 0.4f && bCanAttack)
 	{
+		bCanAttack = false;
 		FTimerHandle AttackTimerHandle;
 		float MontageDelay = KillerAnimInstance->PlayAttackMontage() - 0.2f;
 		GetWorld()->GetTimerManager().SetTimer(AttackTimerHandle, this, &AKiller::EndAttackMontage, MontageDelay);
@@ -195,11 +205,20 @@ void AKiller::EndAttackMontage()
 	FTimerHandle AttackDelayTimerHandle;
 	float AttackDelay = 1.0f;
 	GetWorld()->GetTimerManager().SetTimer(AttackDelayTimerHandle, this, &AKiller::EndAttackDelay, AttackDelay);
+
+	bHoldingAttack = false;
+	HoldingAttack = 0.0f;
 }
 
 void AKiller::EndAttackDelay()
 {
+	bCanAttack = true;
+
+	GetCharacterMovement()->StopMovementImmediately();
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+
+	bHoldingAttack = false;
+	HoldingAttack = 0.0f;
 }
 
 void AKiller::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
@@ -213,8 +232,8 @@ void AKiller::AttackCheck()
 	FHitResult HitResult;
 	FCollisionQueryParams Params(NAME_None, false, this);
 
-	float AttackRange = 100.0f;
-	float AttackRadius = 50.0f;
+	float AttackRange = 200.0f;
+	float AttackRadius = 100.0f;
 
 	bool bResult = GetWorld()->SweepSingleByChannel(
 		HitResult,
@@ -225,6 +244,23 @@ void AKiller::AttackCheck()
 		FCollisionShape::MakeSphere(AttackRadius),
 		Params
 	);
+
+	FVector Vec = GetActorForwardVector() * AttackRange;
+	FVector Center = GetActorLocation() + Vec * 0.5f;
+	float HalfHeight = AttackRange * 0.5f + AttackRange;
+	FQuat Rotation = FRotationMatrix::MakeFromZ(Vec).ToQuat();
+	FColor DrawColor;
+	if (bResult)
+	{
+		DrawColor = FColor::Green;
+	}
+	else
+	{
+		DrawColor = FColor::Red;
+	}
+
+	DrawDebugCapsule(GetWorld(), Center, HalfHeight, AttackRadius, Rotation, DrawColor, false, 2.0f);
+
 	UE_LOG(LogTemp, Warning, TEXT("Attack"));
 
 	if (bResult && HitResult.GetActor())

@@ -95,6 +95,8 @@ private:
 
 	class ASurvivor* Survivor;
 
+	bool bCanAttack;
+
 	bool bHoldingAttack;
 
 	float HoldingAttack;
