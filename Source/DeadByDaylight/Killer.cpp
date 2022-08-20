@@ -547,3 +547,18 @@ void AKiller::EndLiftMontage()
 	Survivor->GetCharacterMovement()->GravityScale = 0.0f;
 	Survivor->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("SurvivorHangLocation"));
 }
+
+void AKiller::KnockOut()
+{
+	GetController()->SetIgnoreLookInput(true);
+	GetController()->SetIgnoreMoveInput(true);
+
+	FTimerHandle StunTimerHandle;
+	float MontageDelay = KillerAnimInstance->PlayKnockOutMontage();
+	GetWorld()->GetTimerManager().SetTimer(StunTimerHandle, this, &AKiller::EndKnockOut, MontageDelay);
+}
+
+void AKiller::EndKnockOut()
+{
+	GetController()->ResetIgnoreInputFlags();
+}

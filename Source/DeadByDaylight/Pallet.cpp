@@ -67,7 +67,8 @@ void APallet::Interact()
 	{
 		if (HitResult.GetActor()->IsA(AKiller::StaticClass()))
 		{
-			// killer stun function
+			AKiller* Killer = Cast<AKiller>(HitResult.GetActor());
+			Killer->KnockOut();
 		}
 	}
 

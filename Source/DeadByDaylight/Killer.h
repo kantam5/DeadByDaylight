@@ -61,6 +61,10 @@ public:
 
 	bool IsInteracting() { return bInteracting; }
 
+	void KnockOut();
+	
+	void EndKnockOut();
+
 private:
 	UPROPERTY(EditAnywhere, Category = "Movement")
 	float WalkSpeed;

@@ -63,6 +63,18 @@ float UKillerAnimInstance::PlayLiftMontage()
 	}
 }
 
+float UKillerAnimInstance::PlayKnockOutMontage()
+{
+	if (!Montage_IsPlaying(KnockOutMontage))
+	{
+		return Montage_Play(KnockOutMontage);
+	}
+	else
+	{
+		return 0.0f;
+	}
+}
+
 // 몽타주에서 설정한 AttackHit
 void UKillerAnimInstance::AnimNotify_AttackHit()
 {
