@@ -32,6 +32,7 @@ void USurvivorAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		bInteracting = Character->IsInteracting();
 		bCarried = Character->IsCarried();
 		bHanged = Character->IsHanged();
+		bTraped = Character->IsTraped();
 
 		if (Character->GetHp() == 3)
 		{
@@ -55,7 +56,6 @@ float USurvivorAnimInstance::PlayVaultMontage()
 {
 	if (!Montage_IsPlaying(VaultMontage))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Valut Montage"));
 		return Montage_Play(VaultMontage);
 	}
 	else
@@ -68,7 +68,6 @@ float USurvivorAnimInstance::PlayPullDownMontage()
 {
 	if (!Montage_IsPlaying(PullDownMontage))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("PullDown Montage"));
 		return Montage_Play(PullDownMontage);
 	}
 	else

@@ -15,6 +15,7 @@
 #include "Hook.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Misc/App.h"
+#include "BearTrap.h"
 
 AKiller::AKiller()
 {
@@ -42,6 +43,14 @@ void AKiller::BeginPlay()
 	{
 		Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("WeaponSocket"));
 		Weapon->SetOwner(this);
+	}
+
+	BearTrap = GetWorld()->SpawnActor<ABearTrap>(BearTrapClass);
+	if (BearTrap)
+	{
+		BearTrap->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("BearTrapSocket"));
+		BearTrap->SetOwner(this);
+		BearTrap->SetActorEnableCollision(false);
 	}
 }
 
@@ -550,6 +559,7 @@ void AKiller::EndLiftMontage()
 
 void AKiller::KnockOut()
 {
+	UE_LOG(LogTemp, Warning, TEXT("KnockOut"));
 	GetController()->SetIgnoreLookInput(true);
 	GetController()->SetIgnoreMoveInput(true);
 
@@ -560,5 +570,6 @@ void AKiller::KnockOut()
 
 void AKiller::EndKnockOut()
 {
+	UE_LOG(LogTemp, Warning, TEXT("EndKnockOut"));
 	GetController()->ResetIgnoreInputFlags();
 }

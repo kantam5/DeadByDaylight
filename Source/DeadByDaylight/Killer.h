@@ -52,17 +52,13 @@ public:
 
 	void Interact(float Value);
 	void EndInteract();
-
-	void ActionInteract();
-
-	void EndVaultMontage();
-
-	void EndLiftMontage();
-
 	bool IsInteracting() { return bInteracting; }
 
+	void ActionInteract();
+	void EndVaultMontage();
+	void EndLiftMontage();
+
 	void KnockOut();
-	
 	void EndKnockOut();
 
 private:
@@ -74,6 +70,12 @@ private:
 
 	UPROPERTY()
 	AWeapon* Weapon;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<class ABearTrap> BearTrapClass;
+
+	UPROPERTY()
+	ABearTrap* BearTrap;
 
 	UPROPERTY()
 	class UKillerAnimInstance* KillerAnimInstance;

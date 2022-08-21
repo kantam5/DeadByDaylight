@@ -32,6 +32,9 @@ public:
 	void SetHanged(bool state); // { bHanged = state; }
 	bool IsHanged() { return bHanged; }
 
+	void SetTraped(bool state);
+	bool IsTraped() { return bTraped; }
+
 protected:
 	void MoveForward(float Value);
 	void MoveRight(float Value);
@@ -102,6 +105,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Movement")
 	bool bHanged;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Movement")
+	bool bTraped;
 
 	UPROPERTY(VisibleAnywhere)
 	USurvivorStatComponent* Stat;

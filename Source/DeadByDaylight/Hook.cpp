@@ -15,10 +15,11 @@ AHook::AHook()
 	SurvivorHookedLocation = CreateDefaultSubobject<USceneComponent>(TEXT("Survivor Hooked Location"));
 	SurvivorHookedLocation->SetupAttachment(RootComponent);
 
-	HangProgress = 4.0f;
-	MaxHangProgress = 5.0f;
+	SaveProgress = 0.0f;
+	MaxSaveProgress = 2.0f;
 
-	SurvivorHangedCount = 0;
+	HangProgress = 0.0f;
+	MaxHangProgress = 2.0f;
 
 	bHanging = false;
 }

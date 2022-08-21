@@ -49,7 +49,6 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Gameplay", meta = (AllowPrivateAccess = "true"))
 	float MaxHangProgress;
 
-	int32 SurvivorHangedCount;
 
 	bool bHanging;
 

@@ -84,6 +84,17 @@ void USurvivorStatComponent::OnAttacked(float DamageAmount)
 	UE_LOG(LogTemp, Warning, TEXT("OnAttacked %d"), Hp);
 }
 
+void USurvivorStatComponent::OnTrapped()
+{
+	Hp -= 1;
+	if (Hp <= 2)
+	{
+		Hp = 2;
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("OnTrapped %d"), Hp);
+}
+
 void USurvivorStatComponent::Recover()
 {
 	if (RecoverProgress < MaxRecoverProgress && !bRecovered)

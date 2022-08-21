@@ -16,6 +16,7 @@
 #include "Hook.h"
 #include "Generator.h"
 #include "ExitDoor.h"
+#include "BearTrap.h"
 
 // Sets default values
 ASurvivor::ASurvivor()
@@ -106,13 +107,13 @@ void ASurvivor::Tick(float DeltaTime)
 		SphereCollision->SetGenerateOverlapEvents(true);
 	}
 
-	if (bHanged == true)
+	if (bHanged == true || bTraped == true)
 	{
 		GetController()->SetIgnoreMoveInput(true);
 	}
-	else
+	else if (bHanged == false && bTraped == false)
 	{
-		GetController()->SetIgnoreMoveInput(false);
+		GetController()->ResetIgnoreInputFlags();
 	}
 }
 
@@ -166,6 +167,16 @@ void ASurvivor::SetHanged(bool state)
 	else if (state == false)
 	{
 		
+	}
+}
+
+void ASurvivor::SetTraped(bool state)
+{
+	bTraped = state;
+	if (state == true)
+	{
+		Stat->OnTrapped();
+		Hp = Stat->GetHp();
 	}
 }
 
@@ -294,6 +305,27 @@ void ASurvivor::Interact(float Value)
 				bInteracting = true;
 			}
 		}
+		// BearTrap
+		else if (MinOverlappingActor && MinOverlappingActor->IsA(ABearTrap::StaticClass()))
+		{
+			ABearTrap* BearTrap = Cast<ABearTrap>(MinOverlappingActor);
+			if (bTraped)
+			{
+				if (BearTrap && BearTrap->IsTraping())
+				{
+					BearTrap->Interact();
+				}
+			}
+			else
+			{
+				if (BearTrap && !BearTrap->IsTraping() && !BearTrap->IsUsed())
+				{
+					BearTrap->Interact();
+
+					bInteracting = true;
+				}
+			}
+		}
 	}
 }
 
@@ -306,6 +338,15 @@ void ASurvivor::EndInteract()
 		{
 			InteractingActor->EndInteract();
 			InteractingActor = nullptr;
+		}
+		else if (InteractingActor->IsA(ABearTrap::StaticClass()))
+		{
+			ABearTrap* BearTrap = Cast<ABearTrap>(InteractingActor);
+			if (BearTrap)
+			{
+				BearTrap->EndInteract();
+				InteractingActor = nullptr;
+			}
 		}
 	}
 

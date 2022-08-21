@@ -28,6 +28,8 @@ public:
 	void SetMaxHp(int32 MaxHp);
 	void OnAttacked(float DamageAmount);
 
+	void OnTrapped();
+
 	int32 GetHp() { return Hp; }
 	float GetWalkSpeed() { return WalkSpeed; }
 	float GetRunSpeed() { return RunSpeed; }
