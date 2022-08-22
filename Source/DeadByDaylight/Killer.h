@@ -32,7 +32,7 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-public:
+protected:
 	void MoveForward(float Value);
 	void MoveRight(float Value);
 
@@ -50,16 +50,24 @@ public:
 	UFUNCTION()
 	void AttackCheck();
 
+	void Power(float Value);
+	void EndPower();
+	void PressPower();
+	void EndPressPowerMontage();
+
 	void Interact(float Value);
 	void EndInteract();
-	bool IsInteracting() { return bInteracting; }
 
 	void ActionInteract();
 	void EndVaultMontage();
 	void EndLiftMontage();
 
+public:
 	void KnockOut();
 	void EndKnockOut();
+
+	bool IsInteracting() { return bInteracting; }
+	bool IsUsingPower() { return bUsingPower; }
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Movement")
@@ -67,15 +75,22 @@ private:
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<class AWeapon> WeaponClass;
-
 	UPROPERTY()
 	AWeapon* Weapon;
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<class ABearTrap> BearTrapClass;
-
 	UPROPERTY()
 	ABearTrap* BearTrap;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Gameplay", meta = (AllowPrivateAccess = "true"))
+	int32 MaxPowerCount;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Gameplay", meta = (AllowPrivateAccess = "true"))
+	int32 PowerCount;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Gameplay", meta = (AllowPrivateAccess = "true"))
+	float PowerProgress;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Gameplay", meta = (AllowPrivateAccess = "true"))
+	float MaxPowerProgress;
 
 	UPROPERTY()
 	class UKillerAnimInstance* KillerAnimInstance;
@@ -91,6 +106,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Movement")
 	bool bActionInteracting = false;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Movement")
+	bool bUsingPower = false;
 
 	UPROPERTY(VisibleAnywhere)
 	TArray<AActor*> OverlappingActors;

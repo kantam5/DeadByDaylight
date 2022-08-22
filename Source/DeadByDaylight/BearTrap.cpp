@@ -36,17 +36,23 @@ void ABearTrap::Interact()
 		UnlockProgress = 0.0f;
 
 		int flag = FMath::RandRange(0, 1);
+		
 		UE_LOG(LogTemp, Warning, TEXT("flag: %d"), flag);
 		if (flag == 0)
 		{
 			Unlock();
 		}
+		else if (flag == 1)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Try again"));
+		}
 	}
 	else if (bTraping == false)
 	{
-		UnlockProgress = 0.0f;
-
+		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Trap is unlocked"));
 		UE_LOG(LogTemp, Warning, TEXT("Trap Unlock"));
+		UnlockProgress = 0.0f;
+		
 		bUsed = true;
 	}
 }
@@ -58,6 +64,8 @@ void ABearTrap::EndInteract()
 
 void ABearTrap::Unlock()
 {
+	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Trap is unlocked"));
+	UE_LOG(LogTemp, Warning, TEXT("Trap Unlock"));
 	bTraping = false;
 
 	if (Survivor != nullptr)
@@ -79,12 +87,16 @@ void ABearTrap::HandleOverlap(UPrimitiveComponent* OverlappedComponent, AActor* 
 {
 	if (bUsed == false)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("OtherActor: %s"), *OtherActor->GetName());
+		if (OtherActor->IsA(ASurvivor::StaticClass()))
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Trap"));
+			UE_LOG(LogTemp, Warning, TEXT("OtherActor: %s"), *OtherActor->GetName());
 
-		Survivor = Cast<ASurvivor>(OtherActor);
-		Survivor->SetTraped(true);
+			Survivor = Cast<ASurvivor>(OtherActor);
+			Survivor->SetTraped(true);
 
-		bTraping = true;
-		bUsed = true;
+			bTraping = true;
+			bUsed = true;
+		}
 	}
 }

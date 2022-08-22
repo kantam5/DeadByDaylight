@@ -107,11 +107,11 @@ void ASurvivor::Tick(float DeltaTime)
 		SphereCollision->SetGenerateOverlapEvents(true);
 	}
 
-	if (bHanged == true || bTraped == true)
+	if (bHanged == true || bTraped == true || bCarried == true)
 	{
 		GetController()->SetIgnoreMoveInput(true);
 	}
-	else if (bHanged == false && bTraped == false)
+	else if (bHanged == false && bTraped == false && bCarried == false)
 	{
 		GetController()->ResetIgnoreInputFlags();
 	}
@@ -177,6 +177,10 @@ void ASurvivor::SetTraped(bool state)
 	{
 		Stat->OnTrapped();
 		Hp = Stat->GetHp();
+	}
+	else if (state == false)
+	{
+
 	}
 }
 

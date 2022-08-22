@@ -29,6 +29,8 @@ public:
 
 	float PlayKnockOutMontage();
 
+	float PlayLiftTrapMontage();
+
 private:
 	UFUNCTION()
 	void AnimNotify_AttackHit();
@@ -43,6 +45,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, meta = (AllowPrivateAccess = "true"))
 	bool bInteracting;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, meta = (AllowPrivateAccess = "true"))
+	bool bUsingPower;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Pawn, meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* AttackMontage;
 
@@ -54,6 +59,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Pawn, meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* KnockOutMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Pawn, meta = (AllowPrivateAccess = "true"))
+	UAnimMontage* LiftTrapMontage;
 
 public:
 	FOnAttackHit OnAttackHit;

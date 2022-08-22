@@ -24,6 +24,7 @@ void UKillerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 		bFalling = Character->GetMovementComponent()->IsFalling();
 		bInteracting = Character->IsInteracting();
+		bUsingPower = Character->IsUsingPower();
 	}
 }
 
@@ -68,6 +69,18 @@ float UKillerAnimInstance::PlayKnockOutMontage()
 	if (!Montage_IsPlaying(KnockOutMontage))
 	{
 		return Montage_Play(KnockOutMontage);
+	}
+	else
+	{
+		return 0.0f;
+	}
+}
+
+float UKillerAnimInstance::PlayLiftTrapMontage()
+{
+	if (!Montage_IsPlaying(LiftTrapMontage))
+	{
+		return Montage_Play(LiftTrapMontage);
 	}
 	else
 	{

@@ -29,6 +29,11 @@ AKiller::AKiller()
 
 	bCanAttack = true;
 	HoldingAttack = 0.0f;
+
+	MaxPowerCount = 2;
+	PowerCount = MaxPowerCount;
+	PowerProgress = 0.0f;
+	MaxPowerProgress = 3.0f;
 }
 
 void AKiller::BeginPlay()
@@ -70,12 +75,12 @@ void AKiller::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (bInteracting == true || bActionInteracting == true)
+	if (bInteracting == true || bActionInteracting == true || bUsingPower == true)
 	{
 		GetController()->SetIgnoreLookInput(true);
 		GetController()->SetIgnoreMoveInput(true);
 	}
-	else if (bInteracting == false && bActionInteracting == false)
+	else if (bInteracting == false && bActionInteracting == false && bUsingPower == false)
 	{
 		GetController()->ResetIgnoreInputFlags();
 	}
@@ -92,9 +97,11 @@ void AKiller::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAxis("Look Up / Down Mouse", this, &APawn::AddControllerPitchInput);
 
 	PlayerInputComponent->BindAxis("Attack", this, &AKiller::AttackAxis);
-	// PlayerInputComponent->BindAction("Attack", EInputEvent::IE_Pressed, this, &AKiller::Attack);
 	PlayerInputComponent->BindAction("Attack", EInputEvent::IE_Released, this, &AKiller::EndAttack);
-	// PlayerInputComponent->BindAction("LungeAttack", EInputEvent::IE_Repeat, this, &AKiller::LungeAttack);
+
+	PlayerInputComponent->BindAxis("Power", this, &AKiller::Power);
+	PlayerInputComponent->BindAction("Power", EInputEvent::IE_Pressed, this, &AKiller::PressPower);
+	PlayerInputComponent->BindAction("Power", EInputEvent::IE_Released, this, &AKiller::EndPower);
 
 	PlayerInputComponent->BindAxis("Killer Interact", this, &AKiller::Interact);
 	PlayerInputComponent->BindAction("Killer Interact", EInputEvent::IE_Released, this, &AKiller::EndInteract);
@@ -279,6 +286,85 @@ void AKiller::AttackCheck()
 		FDamageEvent DamageEvent;
 		HitResult.GetActor()->TakeDamage(1.0f, DamageEvent, GetController(), this);
 	}
+}
+
+void AKiller::Power(float Value)
+{
+	if (Controller != nullptr && Value != 0.0f)
+	{
+		if (PowerCount > 0)
+		{
+			if (PowerProgress < MaxPowerProgress)
+			{
+				PowerProgress += FApp::GetDeltaTime() * 1.0f;
+
+				bUsingPower = true;
+			}
+			else
+			{
+				PowerCount--;
+				PowerProgress = 0.0f;
+
+				FVector BearTrapLocation = GetActorLocation() + GetActorForwardVector() * 300.0f;
+				BearTrapLocation = FVector(BearTrapLocation.X, BearTrapLocation.Y, 0.0f);
+				GetWorld()->SpawnActor<ABearTrap>(BearTrapClass, BearTrapLocation, GetActorRotation());
+
+				bUsingPower = false;
+			}
+		}
+	}
+}
+
+void AKiller::PressPower()
+{
+	GetOverlappingActors(OverlappingActors);
+
+	// 가장 가까운 InteractingActor
+	AActor* MinOverlappingActor = nullptr;
+	float MinDistance = 5000.0f;
+
+	for (AActor* OverlappingActor : OverlappingActors)
+	{
+		float ActorDistance = FVector::Dist(GetActorLocation(), OverlappingActor->GetActorLocation());
+		if (MinDistance > ActorDistance)
+		{
+			MinDistance = ActorDistance;
+			MinOverlappingActor = OverlappingActor;
+		}
+	}
+
+	if (MinOverlappingActor)
+	{
+		if (MinOverlappingActor->IsA(ABearTrap::StaticClass()))
+		{
+			if (PowerCount < MaxPowerCount)
+			{
+				ABearTrap* GroundBearTrap = Cast<ABearTrap>(MinOverlappingActor);
+				GroundBearTrap->Destroy();
+
+				PowerCount++;
+
+				bActionInteracting = true;
+
+				FTimerHandle LiftTimerHandle;
+				float MontageDelay = KillerAnimInstance->PlayLiftTrapMontage();
+				GetWorld()->GetTimerManager().SetTimer(LiftTimerHandle, this, &AKiller::EndPressPowerMontage, MontageDelay);
+			}
+		}
+	}
+}
+
+void AKiller::EndPressPowerMontage()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Power Count: %d"), PowerCount);
+	bActionInteracting = false;
+}
+
+void AKiller::EndPower()
+{
+	bUsingPower = false;
+
+	PowerProgress = 0.0f;
 }
 
 void AKiller::Interact(float Value)
@@ -495,7 +581,8 @@ void AKiller::ActionInteract()
 				GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 				SetActorLocation(FVector(InteractLocation->GetComponentLocation().X, InteractLocation->GetComponentLocation().Y, GetActorLocation().Z));
 
-				FVector ToTarget = MoveLocation->GetComponentLocation() - InteractLocation->GetComponentLocation();
+				// FVector ToTarget = MoveLocation->GetComponentLocation() - InteractLocation->GetComponentLocation();
+				FVector ToTarget = Window->GetActorLocation() - Camera->GetComponentLocation();
 				FRotator LookAtRotation = FRotator(ToTarget.Rotation());
 				GetController()->SetControlRotation(LookAtRotation);
 
@@ -514,7 +601,7 @@ void AKiller::ActionInteract()
 			Survivor = Cast<ASurvivor>(MinOverlappingActor);
 			if (Survivor->GetHp() == 1 && !Survivor->IsCarried())
 			{	
-				FVector ToTarget = Survivor->GetActorLocation() - GetActorLocation();
+				FVector ToTarget = Survivor->GetActorLocation() - Camera->GetComponentLocation();
 				FRotator LookAtRotation = FRotator(ToTarget.Rotation());
 				GetController()->SetControlRotation(LookAtRotation);
 
@@ -559,6 +646,7 @@ void AKiller::EndLiftMontage()
 
 void AKiller::KnockOut()
 {
+	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Killer KnockOut"));
 	UE_LOG(LogTemp, Warning, TEXT("KnockOut"));
 	GetController()->SetIgnoreLookInput(true);
 	GetController()->SetIgnoreMoveInput(true);
@@ -570,6 +658,7 @@ void AKiller::KnockOut()
 
 void AKiller::EndKnockOut()
 {
+	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Killer EndKnockOut"));
 	UE_LOG(LogTemp, Warning, TEXT("EndKnockOut"));
 	GetController()->ResetIgnoreInputFlags();
 }
