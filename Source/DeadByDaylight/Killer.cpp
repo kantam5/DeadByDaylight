@@ -106,7 +106,7 @@ void AKiller::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAxis("Killer Interact", this, &AKiller::Interact);
 	PlayerInputComponent->BindAction("Killer Interact", EInputEvent::IE_Released, this, &AKiller::EndInteract);
 
-	PlayerInputComponent->BindAction("Vault", EInputEvent::IE_Pressed, this, &AKiller::ActionInteract);
+	PlayerInputComponent->BindAction("Action Interact", EInputEvent::IE_Pressed, this, &AKiller::ActionInteract);
 }
 
 

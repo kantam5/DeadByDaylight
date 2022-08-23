@@ -6,21 +6,24 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "InteractiveActor.h"
-#include "SurvivorStatComponent.h"
-#include "Window.h"
-#include "Math/UnrealMathUtility.h"
-#include "SurvivorAnimInstance.h"
-#include "Pallet.h"
 #include "Components/SphereComponent.h"
+#include "Math/UnrealMathUtility.h"
+#include "InteractiveActor.h"
+#include "Window.h"
+#include "Pallet.h"
 #include "Hook.h"
 #include "Generator.h"
 #include "ExitDoor.h"
 #include "BearTrap.h"
+#include "SurvivorStatComponent.h"
+#include "SurvivorAnimInstance.h"
 
 // Sets default values
 ASurvivor::ASurvivor()
 {
+	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	PrimaryActorTick.bCanEverTick = true;
+
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(55.0f, 200.0f);
 
@@ -55,18 +58,15 @@ ASurvivor::ASurvivor()
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-
 	Stat = CreateDefaultSubobject<USurvivorStatComponent>(TEXT("Stat"));
-	WalkSpeed = 600.0f;
-	RunSpeed = 1200.0f;
-
-	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 
 	SphereCollision = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere Collision"));
 	SphereCollision->SetupAttachment(RootComponent);
 
+	bRunning = false;
+	bCarried = false;
+	bHanged = false;
+	bTraped = false;
 }
 
 // Called when the game starts or when spawned
@@ -75,6 +75,10 @@ void ASurvivor::BeginPlay()
 	Super::BeginPlay();
 
 	Hp = Stat->GetHp();
+	
+	WalkSpeed = Stat->GetWalkSpeed();
+	RunSpeed = Stat->GetRunSpeed();
+	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
 	GetCharacterMovement()->SetCrouchedHalfHeight(200.0f);
 
@@ -95,26 +99,6 @@ void ASurvivor::PostInitializeComponents()
 void ASurvivor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	if (bCarried == true)
-	{
-		GetCapsuleComponent()->SetGenerateOverlapEvents(false);
-		SphereCollision->SetGenerateOverlapEvents(false);
-	}
-	else
-	{
-		GetCapsuleComponent()->SetGenerateOverlapEvents(true);
-		SphereCollision->SetGenerateOverlapEvents(true);
-	}
-
-	if (bHanged == true || bTraped == true || bCarried == true)
-	{
-		GetController()->SetIgnoreMoveInput(true);
-	}
-	else if (bHanged == false && bTraped == false && bCarried == false)
-	{
-		GetController()->ResetIgnoreInputFlags();
-	}
 }
 
 // Called to bind functionality to input
@@ -141,47 +125,7 @@ void ASurvivor::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction(TEXT("Crouch"), EInputEvent::IE_Pressed, this, &ASurvivor::CrouchStart);
 	PlayerInputComponent->BindAction(TEXT("Crouch"), EInputEvent::IE_Released, this, &ASurvivor::CrouchEnd);
 
-	PlayerInputComponent->BindAction(TEXT("Vault"), EInputEvent::IE_Pressed, this, &ASurvivor::Vault);
-
-	PlayerInputComponent->BindAction(TEXT("Pull Down"), EInputEvent::IE_Pressed, this, &ASurvivor::PullDown);
-}
-
-float ASurvivor::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
-{
-	// Stat에서 Survivor의 상태를 변경
-	Stat->OnAttacked(DamageAmount);
-
-	Hp = Stat->GetHp();
-
-	return DamageAmount;
-}
-
-// 여기도 처리
-void ASurvivor::SetHanged(bool state)
-{
-	bHanged = state;
-	if (state == true)
-	{
-		Stat->IncreaseHangedCount();
-	}
-	else if (state == false)
-	{
-		
-	}
-}
-
-void ASurvivor::SetTraped(bool state)
-{
-	bTraped = state;
-	if (state == true)
-	{
-		Stat->OnTrapped();
-		Hp = Stat->GetHp();
-	}
-	else if (state == false)
-	{
-
-	}
+	PlayerInputComponent->BindAction(TEXT("Action Interact"), EInputEvent::IE_Pressed, this, &ASurvivor::ActionInteract);
 }
 
 void ASurvivor::MoveForward(float Value)
@@ -213,6 +157,90 @@ void ASurvivor::MoveRight(float Value)
 	}
 }
 
+void ASurvivor::StartRun()
+{
+	bRunning = true;
+	GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
+}
+
+void ASurvivor::StopRun()
+{
+	bRunning = false;
+	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+}
+
+void ASurvivor::CrouchStart()
+{
+	Crouch();
+}
+
+void ASurvivor::CrouchEnd()
+{
+	UnCrouch();
+}
+
+float ASurvivor::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	// Stat에서 Survivor의 상태를 변경
+	Stat->OnAttacked(DamageAmount);
+
+	Hp = Stat->GetHp();
+
+	return DamageAmount;
+}
+
+
+void ASurvivor::SetCarried(bool state)
+{
+	bCarried = state;
+	if (state == true)
+	{
+		GetCapsuleComponent()->SetGenerateOverlapEvents(false);
+		SphereCollision->SetGenerateOverlapEvents(false);
+
+		GetController()->SetIgnoreMoveInput(true);
+	}
+	else if (state == false)
+	{
+		GetCapsuleComponent()->SetGenerateOverlapEvents(true);
+		SphereCollision->SetGenerateOverlapEvents(true);
+
+		GetController()->ResetIgnoreInputFlags();
+	}
+}
+
+void ASurvivor::SetHanged(bool state)
+{
+	bHanged = state;
+	if (state == true)
+	{
+		Stat->IncreaseHangedCount();
+
+		GetController()->SetIgnoreMoveInput(true);
+	}
+	else if (state == false)
+	{
+		GetController()->ResetIgnoreInputFlags();
+	}
+}
+
+void ASurvivor::SetTraped(bool state)
+{
+	bTraped = state;
+	if (state == true)
+	{
+		Stat->OnTrapped();
+		Hp = Stat->GetHp();
+
+		GetController()->SetIgnoreMoveInput(true);
+	}
+	else if (state == false)
+	{
+		GetController()->ResetIgnoreInputFlags();
+	}
+}
+
+
 void ASurvivor::Interact(float Value)
 {
 	// Survivor와 Overlap된 Actor들 중에서 가장 가까운 Actors에 Interact
@@ -220,25 +248,10 @@ void ASurvivor::Interact(float Value)
 
 	if ((Controller != nullptr) && (Value != 0.0f) && !OverlappingActors.IsEmpty())
 	{
-		// 가장 가까운 InteractingActor
-		AActor* MinOverlappingActor = nullptr;
-		float MinDistance = 5000.0f;
-
-		if (!OverlappingActors.IsEmpty())
-		{
-			for (AActor* OverlappingActor : OverlappingActors)
-			{
-				float ActorDistance = FVector::Dist(GetActorLocation(), OverlappingActor->GetActorLocation());
-				if (MinDistance > ActorDistance)
-				{
-					MinDistance = ActorDistance;
-					MinOverlappingActor = OverlappingActor;
-				}
-			}
-		}
+		AActor* MinOverlappingActor = GetMinOverlappingActor();
 
 		// Generator, ExitDoor
-		if (MinOverlappingActor && (MinOverlappingActor->IsA(AGenerator::StaticClass()) || MinOverlappingActor->IsA(AExitDoor::StaticClass())) && Stat->GetHp() >= 2)
+		if (MinOverlappingActor && (MinOverlappingActor->IsA(AGenerator::StaticClass()) || MinOverlappingActor->IsA(AExitDoor::StaticClass())) && Hp >= 2)
 		{
 			InteractingActor = Cast<AInteractiveActor>(MinOverlappingActor);
 			if (InteractingActor)
@@ -246,62 +259,37 @@ void ASurvivor::Interact(float Value)
 				InteractingActor->Interact();
 			}
 
-			// Interact시 Survivor의 위치를 고정
-			USceneComponent* InteractLocation = nullptr;
-			float MinInteractDistance = 1000.0f;
-			if (!InteractLocation)
-			{
-				for (USceneComponent* InteractCharacterLocation : InteractingActor->InteractCharacterLocations)
-				{
-					float LocationDistance = FVector::Dist(GetActorLocation(), InteractCharacterLocation->GetComponentLocation());
-					if (MinInteractDistance >= LocationDistance)
-					{
-						MinInteractDistance = LocationDistance;
-						InteractLocation = InteractCharacterLocation;
-					}
-				}
-			}
-
-			SetActorLocation(FVector(InteractLocation->GetComponentLocation().X, InteractLocation->GetComponentLocation().Y, GetActorLocation().Z));
-
-			FVector ToTarget = InteractingActor->GetActorLocation() - GetActorLocation();
-			FRotator LookAtRotation = FRotator(0.0f, ToTarget.Rotation().Yaw, 0.0f);
-			SetActorRotation(LookAtRotation);
+			SetSurvivorInteractLocation(MinOverlappingActor);
 
 			bInteracting = true;
 		}
 		// Heal Survivor
-		else if (MinOverlappingActor && MinOverlappingActor->IsA(ASurvivor::StaticClass()) && Stat->GetHp() >= 2)
+		else if (MinOverlappingActor && MinOverlappingActor->IsA(ASurvivor::StaticClass()) && Hp >= 2)
 		{
 			ASurvivor* WoundedSurvivor = Cast<ASurvivor>(MinOverlappingActor);
 
-			if (WoundedSurvivor)
+			if (WoundedSurvivor->Stat->GetHp() <= 2)
 			{
-				if (WoundedSurvivor->Stat->GetHp() <= 2)
-				{
-					WoundedSurvivor->Stat->Recover();
+				WoundedSurvivor->Stat->Recover();
 
-					GetCharacterMovement()->StopMovementImmediately();
+				GetCharacterMovement()->StopMovementImmediately();
+				FVector ToTarget = WoundedSurvivor->GetActorLocation() - GetActorLocation();
+				FRotator LookAtRotation = FRotator(0.0f, ToTarget.Rotation().Yaw, 0.0f);
+				SetActorRotation(LookAtRotation);
 
-					FVector ToTarget = WoundedSurvivor->GetActorLocation() - GetActorLocation();
-					FRotator LookAtRotation = FRotator(0.0f, ToTarget.Rotation().Yaw, 0.0f);
-					SetActorRotation(LookAtRotation);
-
-					bInteracting = true;
-				}
+				bInteracting = true;
 			}
 		}
 		// Hook
-		else if (MinOverlappingActor && MinOverlappingActor->IsA(AHook::StaticClass()) && Stat->GetHp() >= 2)
+		else if (MinOverlappingActor && MinOverlappingActor->IsA(AHook::StaticClass()) && Hp >= 2)
 		{
 			InteractingActor = Cast<AInteractiveActor>(MinOverlappingActor);
-			AHook* Hook = Cast<AHook>(InteractingActor);
+			AHook* Hook = Cast<AHook>(MinOverlappingActor);
 			if (Hook && Hook->IsHanging())
 			{
 				Hook->Interact();
 
 				GetCharacterMovement()->StopMovementImmediately();
-
 				FVector ToTarget = InteractingActor->GetActorLocation() - GetActorLocation();
 				FRotator LookAtRotation = FRotator(0.0f, ToTarget.Rotation().Yaw, 0.0f);
 				SetActorRotation(LookAtRotation);
@@ -335,7 +323,6 @@ void ASurvivor::Interact(float Value)
 
 void ASurvivor::EndInteract()
 {
-	// 치료에는 InteractingActor가 비어있다.
 	if (InteractingActor)
 	{
 		if (InteractingActor->IsA(AHook::StaticClass()))
@@ -357,234 +344,166 @@ void ASurvivor::EndInteract()
 	bInteracting = false;
 }
 
-void ASurvivor::Vault()
+
+void ASurvivor::ActionInteract()
 {
-	// 오버랩 되면은 창틀의 반대방향으로 넘어간다. 
-	// 창틀에서 플레이어보다 먼 위치의 반대방향의 방향으로 점점 이동하는 코드
-	// 달릴 때 넘으면 더 빨리 넘도록 설정
-	
 	GetOverlappingActors(OverlappingActors);
 	if (Controller != nullptr && !OverlappingActors.IsEmpty())
 	{
-		// 가장 가까운 InteractingActor
-		AActor* MinOverlappingActor = nullptr;
-		AWindow* Window = nullptr;
-		float MinDistance = 5000.0f;
+		AActor* MinOverlappingActor = GetMinOverlappingActor();
 
-		if (!OverlappingActors.IsEmpty())
+		// 창틀
+		if (MinOverlappingActor && MinOverlappingActor->IsA(AWindow::StaticClass()) && Hp >= 2)
 		{
-			for (AActor* OverlappingActor : OverlappingActors)
+			SetSurvivorActionInteractLocation(MinOverlappingActor);
+
+			FTimerHandle VaultTimerHandle;
+			float VaultMontageDelay = SurvivorAnimInstance->PlayVaultMontage() - 0.2f;
+			GetWorld()->GetTimerManager().SetTimer(VaultTimerHandle, this, &ASurvivor::EndActionInteractMontage, VaultMontageDelay);
+		}
+		// 판자
+		else if (MinOverlappingActor && MinOverlappingActor->IsA(APallet::StaticClass()) && Hp >= 2)
+		{
+			APallet* Pallet = Cast<APallet>(MinOverlappingActor);
+			if (Pallet->IsUsed())
 			{
-				float ActorDistance = FVector::Dist(GetActorLocation(), OverlappingActor->GetActorLocation());
-				if (MinDistance > ActorDistance)
-				{
-					MinDistance = ActorDistance;
-					MinOverlappingActor = OverlappingActor;
-				}
+				SetSurvivorActionInteractLocation(MinOverlappingActor);
+
+				FTimerHandle VaultTimerHandle;
+				float VaultMontageDelay = SurvivorAnimInstance->PlayVaultMontage() - 0.2f;
+				GetWorld()->GetTimerManager().SetTimer(VaultTimerHandle, this, &ASurvivor::EndActionInteractMontage, VaultMontageDelay);
 			}
-			if (MinOverlappingActor)
+			else
 			{
-				Window = Cast<AWindow>(MinOverlappingActor);
-				if (Window)
-				{
-					USceneComponent* MoveLocation = nullptr;
-					USceneComponent* InteractLocation = nullptr;
-					float MaxInteractDistance = 0.0f;
-					float MinInteractDistance = 1000.0f;
-					for (USceneComponent* InteractCharacterLocation : Window->InteractCharacterLocations)
-					{
-						float LocationDistance = FVector::Dist(GetActorLocation(), InteractCharacterLocation->GetComponentLocation());
-						if (MaxInteractDistance <= LocationDistance)
-						{
-							MaxInteractDistance = LocationDistance;
-							MoveLocation = InteractCharacterLocation;
-						}
-						if (MinInteractDistance >= LocationDistance)
-						{
-							MinInteractDistance = LocationDistance;
-							InteractLocation = InteractCharacterLocation;
-						}
-					}
+				SetSurvivorActionInteractLocation(MinOverlappingActor);
 
-					GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
-					GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-					SetActorLocation(FVector(InteractLocation->GetComponentLocation().X, InteractLocation->GetComponentLocation().Y, GetActorLocation().Z));
+				Pallet->Interact();
 
-					FVector ToTarget = MoveLocation->GetComponentLocation() - InteractLocation->GetComponentLocation();
-					FRotator LookAtRotation = FRotator(0.0f, ToTarget.Rotation().Yaw, 0.0f);
-					SetActorRotation(LookAtRotation);
-
-					GetCharacterMovement()->StopMovementImmediately();
-					APlayerController* PlayerController = Cast<APlayerController>(GetController());
-					PlayerController->SetIgnoreMoveInput(true);
-
-					FTimerHandle VaultTimerHandle;
-					float VaultMontageDelay = SurvivorAnimInstance->PlayVaultMontage() - 0.2f;
-					WindowPalletInteractMoveLocation = FVector(MoveLocation->GetComponentLocation().X, MoveLocation->GetComponentLocation().Y, GetActorLocation().Z);
-					GetWorld()->GetTimerManager().SetTimer(VaultTimerHandle, this, &ASurvivor::EndVaultMontage, VaultMontageDelay);
-				}
+				FTimerHandle PullDownTimerHandle;
+				float PullDownMontageDelay = SurvivorAnimInstance->PlayPullDownMontage() - 0.2f;
+				GetWorld()->GetTimerManager().SetTimer(PullDownTimerHandle, this, &ASurvivor::EndActionInteractMontage, PullDownMontageDelay);
 			}
 		}
 	}
 }
 
-void ASurvivor::EndVaultMontage()
+void ASurvivor::EndActionInteractMontage()
 {
+	InteractingActor = nullptr;
+
 	SetActorLocation(WindowPalletInteractMoveLocation);
 
-	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 
-	APlayerController* PlayerController = Cast<APlayerController>(GetController());
-	PlayerController->SetIgnoreMoveInput(false);
+	GetController()->ResetIgnoreInputFlags();
 
 	WindowPalletInteractMoveLocation = GetActorLocation();
+
+	// GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	// GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 }
 
-void ASurvivor::PullDown()
+
+// 상호작용 시 생존자와 Overlap중인 가장 가까운 Actor를 반환
+AActor* ASurvivor::GetMinOverlappingActor()
 {
-	GetOverlappingActors(OverlappingActors);
-	if (Controller != nullptr && !OverlappingActors.IsEmpty())
+	// 가장 가까운 InteractingActor
+	AActor* MinOverlappingActor = nullptr;
+	float MinDistance = 5000.0f;
+
+	if (!OverlappingActors.IsEmpty())
 	{
-		// 가장 가까운 InteractingActor
-		AActor* MinOverlappingActor = nullptr;
-		APallet* Pallet = nullptr;
-		float MinDistance = 5000.0f;
-
-		if (!OverlappingActors.IsEmpty())
+		for (AActor* OverlappingActor : OverlappingActors)
 		{
-			for (AActor* OverlappingActor : OverlappingActors)
+			float ActorDistance = FVector::Dist(GetActorLocation(), OverlappingActor->GetActorLocation());
+			if (MinDistance > ActorDistance)
 			{
-				float ActorDistance = FVector::Dist(GetActorLocation(), OverlappingActor->GetActorLocation());
-				if (MinDistance > ActorDistance)
-				{
-					MinDistance = ActorDistance;
-					MinOverlappingActor = OverlappingActor;
-				}
-			}
-			if (MinOverlappingActor)
-			{
-				Pallet = Cast<APallet>(MinOverlappingActor);
-				if (Pallet)
-				{
-					USceneComponent* MaxDistanceLocation = nullptr;
-					USceneComponent* MinDistanceLocation = nullptr;
-					if (!Pallet->IsUsed())
-					{
-						float MaxInteractDistance = 0.0f;
-						float MinInteractDistance = 1000.0f;
-						for (USceneComponent* InteractCharacterLocation : Pallet->InteractCharacterLocations)
-						{
-							float LocationDistance = FVector::Dist(GetActorLocation(), InteractCharacterLocation->GetComponentLocation());
-							if (MaxInteractDistance <= LocationDistance)
-							{
-								MaxInteractDistance = LocationDistance;
-								MaxDistanceLocation = InteractCharacterLocation;
-							}
-							if (MinInteractDistance >= LocationDistance)
-							{
-								MinInteractDistance = LocationDistance;
-								MinDistanceLocation = InteractCharacterLocation;
-							}
-						}
-
-						SetActorLocation(FVector(MinDistanceLocation->GetComponentLocation().X, MinDistanceLocation->GetComponentLocation().Y, GetActorLocation().Z));
-
-						FVector ToTarget = MaxDistanceLocation->GetComponentLocation() - MinDistanceLocation->GetComponentLocation();
-						FRotator LookAtRotation = FRotator(0.0f, ToTarget.Rotation().Yaw, 0.0f);
-						SetActorRotation(LookAtRotation);
-
-						GetCharacterMovement()->StopMovementImmediately();
-						APlayerController* PlayerController = Cast<APlayerController>(GetController());
-						PlayerController->SetIgnoreMoveInput(true);
-
-						Pallet->Interact();
-
-						FTimerHandle PullDownTimerHandle;
-						float PullDownMontageDelay = SurvivorAnimInstance->PlayPullDownMontage() - 0.2f;
-						WindowPalletInteractMoveLocation = FVector(MinDistanceLocation->GetComponentLocation().X, MinDistanceLocation->GetComponentLocation().Y, GetActorLocation().Z);
-						GetWorld()->GetTimerManager().SetTimer(PullDownTimerHandle, this, &ASurvivor::EndVaultMontage, PullDownMontageDelay);
-					}
-					else if (Pallet->IsUsed())
-					{
-						float MaxInteractDistance = 0.0f;
-						float MinInteractDistance = 1000.0f;
-						for (USceneComponent* InteractCharacterLocation : Pallet->InteractCharacterLocations)
-						{
-							float LocationDistance = FVector::Dist(GetActorLocation(), InteractCharacterLocation->GetComponentLocation());
-							if (MaxInteractDistance <= LocationDistance)
-							{
-								MaxInteractDistance = LocationDistance;
-								MaxDistanceLocation = InteractCharacterLocation;
-							}
-							if (MinInteractDistance >= LocationDistance)
-							{
-								MinInteractDistance = LocationDistance;
-								MinDistanceLocation = InteractCharacterLocation;
-							}
-						}
-
-						GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
-						GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-						SetActorLocation(FVector(MinDistanceLocation->GetComponentLocation().X, MinDistanceLocation->GetComponentLocation().Y, GetActorLocation().Z));
-
-						FVector ToTarget = MaxDistanceLocation->GetComponentLocation() - MinDistanceLocation->GetComponentLocation();
-						FRotator LookAtRotation = FRotator(0.0f, ToTarget.Rotation().Yaw, 0.0f);
-						SetActorRotation(LookAtRotation);
-
-						GetCharacterMovement()->StopMovementImmediately();
-						APlayerController* PlayerController = Cast<APlayerController>(GetController());
-						PlayerController->SetIgnoreMoveInput(true);
-
-						FTimerHandle VaultTimerHandle;
-						float VaultMontageDelay = SurvivorAnimInstance->PlayVaultMontage() - 0.2f;
-						WindowPalletInteractMoveLocation = FVector(MaxDistanceLocation->GetComponentLocation().X, MaxDistanceLocation->GetComponentLocation().Y, GetActorLocation().Z);
-						GetWorld()->GetTimerManager().SetTimer(VaultTimerHandle, this, &ASurvivor::EndVaultMontage, VaultMontageDelay);
-					}
-				}
+				MinDistance = ActorDistance;
+				MinOverlappingActor = OverlappingActor;
 			}
 		}
 	}
+
+	return MinOverlappingActor;
 }
 
-void ASurvivor::EndPullDownMontage()
+// 생존자가 발전기, 출구와 상호작용했을 경우의 Location과 Rotation설정
+void ASurvivor::SetSurvivorInteractLocation(AActor* MinOverlappingActor)
 {
-	SetActorLocation(WindowPalletInteractMoveLocation);
+	InteractingActor = Cast<AInteractiveActor>(MinOverlappingActor);
 
-	APlayerController* PlayerController = Cast<APlayerController>(GetController());
-	PlayerController->SetIgnoreMoveInput(false);
+	// Interact시 Survivor의 위치를 고정
+	USceneComponent* InteractLocation = nullptr;
+	float MinInteractDistance = 1000.0f;
+	if (!InteractLocation)
+	{
+		for (USceneComponent* InteractCharacterLocation : InteractingActor->InteractCharacterLocations)
+		{
+			float LocationDistance = FVector::Dist(GetActorLocation(), InteractCharacterLocation->GetComponentLocation());
+			if (MinInteractDistance >= LocationDistance)
+			{
+				MinInteractDistance = LocationDistance;
+				InteractLocation = InteractCharacterLocation;
+			}
+		}
+	}
 
-	WindowPalletInteractMoveLocation = GetActorLocation();
+	SetActorLocation(FVector(InteractLocation->GetComponentLocation().X, InteractLocation->GetComponentLocation().Y, GetActorLocation().Z));
+
+	FVector ToTarget = InteractingActor->GetActorLocation() - GetActorLocation();
+	FRotator LookAtRotation = FRotator(0.0f, ToTarget.Rotation().Yaw, 0.0f);
+	SetActorRotation(LookAtRotation);
 }
 
-void ASurvivor::StartRun()
+// 생존자가 창틀, 판자와 상호작용했을 경우의 Location과 Rotation설정
+void ASurvivor::SetSurvivorActionInteractLocation(AActor* MinOverlappingActor)
 {
-	bRunning = true;
-	GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
-}
+	InteractingActor = Cast<AInteractiveActor>(MinOverlappingActor);
 
-void ASurvivor::StopRun()
-{
-	bRunning = false;
-	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
-}
+	USceneComponent* MaxDistanceLocation = nullptr;
+	USceneComponent* MinDistanceLocation = nullptr;
+	float MaxInteractDistance = 0.0f;
+	float MinInteractDistance = 1000.0f;
+	for (USceneComponent* InteractCharacterLocation : InteractingActor->InteractCharacterLocations)
+	{
+		float LocationDistance = FVector::Dist(GetActorLocation(), InteractCharacterLocation->GetComponentLocation());
+		if (MaxInteractDistance <= LocationDistance)
+		{
+			MaxInteractDistance = LocationDistance;
+			MaxDistanceLocation = InteractCharacterLocation;
+		}
+		if (MinInteractDistance >= LocationDistance)
+		{
+			MinInteractDistance = LocationDistance;
+			MinDistanceLocation = InteractCharacterLocation;
+		}
+	}
 
-void ASurvivor::CrouchStart()
-{
-	Crouch();
-}
+	// GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
+	// GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	SetActorLocation(FVector(MinDistanceLocation->GetComponentLocation().X, MinDistanceLocation->GetComponentLocation().Y, GetActorLocation().Z));
 
-void ASurvivor::CrouchEnd()
-{
-	UnCrouch();
-}
+	FVector ToTarget = MaxDistanceLocation->GetComponentLocation() - MinDistanceLocation->GetComponentLocation();
+	FRotator LookAtRotation = FRotator(0.0f, ToTarget.Rotation().Yaw, 0.0f);
+	SetActorRotation(LookAtRotation);
 
-bool ASurvivor::IsRunning()
-{
-	return bRunning;
-}
+	GetCharacterMovement()->StopMovementImmediately();
+	GetController()->SetIgnoreMoveInput(true);
 
-bool ASurvivor::IsInteracting()
-{
-	return bInteracting;
+	if (InteractingActor->IsA(APallet::StaticClass()))
+	{
+		APallet* Pallet = Cast<APallet>(InteractingActor);
+		if (Pallet->IsUsed())
+		{
+			WindowPalletInteractMoveLocation = FVector(MaxDistanceLocation->GetComponentLocation().X, MaxDistanceLocation->GetComponentLocation().Y, GetActorLocation().Z);
+		}
+		else
+		{
+			WindowPalletInteractMoveLocation = FVector(MinDistanceLocation->GetComponentLocation().X, MinDistanceLocation->GetComponentLocation().Y, GetActorLocation().Z);
+		}
+	}
+	else
+	{
+		WindowPalletInteractMoveLocation = FVector(MaxDistanceLocation->GetComponentLocation().X, MaxDistanceLocation->GetComponentLocation().Y, GetActorLocation().Z);
+	}
+
 }

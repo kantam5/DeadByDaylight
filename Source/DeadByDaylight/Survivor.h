@@ -17,19 +17,18 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-
 	virtual void PostInitializeComponents() override;
 
 public:
 	virtual void Tick(float DeltaTime) override;
 
-	bool IsRunning();
-	bool IsInteracting();
+	bool IsRunning() { return bRunning; };
+	bool IsInteracting() { return bInteracting; };
 
-	void SetCarried(bool state) { bCarried = state; }
+	void SetCarried(bool state);
 	bool IsCarried() { return bCarried; }
 
-	void SetHanged(bool state); // { bHanged = state; }
+	void SetHanged(bool state);
 	bool IsHanged() { return bHanged; }
 
 	void SetTraped(bool state);
@@ -45,14 +44,14 @@ protected:
 	void CrouchStart();
 	void CrouchEnd();
 
+	AActor* GetMinOverlappingActor();
+	void SetSurvivorInteractLocation(AActor* MinOverlappingActor);
 	void Interact(float Value);
 	void EndInteract();
 
-	void Vault();
-	void EndVaultMontage();
-
-	void PullDown();
-	void EndPullDownMontage();
+	void SetSurvivorActionInteractLocation(AActor* MinOverlappingActor);
+	void ActionInteract();
+	void EndActionInteractMontage();
 
 protected:
 	// APawn interface
@@ -76,50 +75,40 @@ private:
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;
-
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera;
 
-	// 다른 생존자를 힐 할 때 필요
+	// 생존자 치료 가능 범위
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Coponents", meta = (AllowPrivateAccess = "true"))
 	class USphereComponent* SphereCollision;
 
+	UPROPERTY()
+	class USurvivorAnimInstance* SurvivorAnimInstance;
+
+	UPROPERTY(VisibleAnywhere)
+	USurvivorStatComponent* Stat;
 	UPROPERTY(VisibleAnywhere, Category = Stat, Meta = (AllowPrivateAccess = true))
 	int32 Hp;
 
 	UPROPERTY(EditAnywhere, Category = "Movement")
 	float WalkSpeed;
-
 	UPROPERTY(EditAnywhere, Category = "Movement")
 	float RunSpeed;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Movement")
 	bool bRunning;
-
 	UPROPERTY(EditDefaultsOnly, Category = "Movement")
 	bool bInteracting;
-
 	UPROPERTY(EditDefaultsOnly, Category = "Movement")
 	bool bCarried;
-
 	UPROPERTY(EditDefaultsOnly, Category = "Movement")
 	bool bHanged;
-
 	UPROPERTY(EditDefaultsOnly, Category = "Movement")
 	bool bTraped;
 
-	UPROPERTY(VisibleAnywhere)
-	USurvivorStatComponent* Stat;
-
-	UPROPERTY(VisibleAnywhere)
 	TArray<AActor*> OverlappingActors;
-
 	class AInteractiveActor* InteractingActor;
-
-	UPROPERTY()
-	class USurvivorAnimInstance* SurvivorAnimInstance;
-
 	FVector WindowPalletInteractMoveLocation;
 
 };

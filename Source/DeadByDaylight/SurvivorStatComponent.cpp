@@ -19,7 +19,6 @@ USurvivorStatComponent::USurvivorStatComponent()
 
 	MaxRecoverProgress = 2.0f;
 	RecoverProgress = 0.0f;
-
 }
 
 
@@ -35,12 +34,12 @@ void USurvivorStatComponent::BeginPlay()
 
 	// ...
 	SetMaxHp(Hp);
-
 }
 
 void USurvivorStatComponent::InitializeComponent()
 {
 	Super::InitializeComponent();
+
 }
 
 void USurvivorStatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -61,7 +60,7 @@ void USurvivorStatComponent::SetMaxHp(int32 MaxHp)
 {
 	auto DBDGameInstance = Cast<UDBDGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	if (DBDGameInstance)
-	{
+	{		
 		auto StatData = DBDGameInstance->GetSurvivorData(Hp);
 		if (StatData)
 		{
