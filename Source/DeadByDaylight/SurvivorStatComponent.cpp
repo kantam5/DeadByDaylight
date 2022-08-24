@@ -19,6 +19,9 @@ USurvivorStatComponent::USurvivorStatComponent()
 
 	MaxRecoverProgress = 2.0f;
 	RecoverProgress = 0.0f;
+
+	MaxHangingTime = 30.0f;
+	HangingTime = 0.0f;
 }
 
 
@@ -67,6 +70,7 @@ void USurvivorStatComponent::SetMaxHp(int32 MaxHp)
 			Hp = StatData->MaxHp;
 			WalkSpeed = StatData->WalkSpeed;
 			RunSpeed = StatData->RunSpeed;
+			CrawlSpeed = StatData->CrawlSpeed;
 			HangedCount = StatData->HangedCount;
 		}
 	}

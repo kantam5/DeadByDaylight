@@ -13,6 +13,9 @@ USurvivorAnimInstance::USurvivorAnimInstance()
 	bInjured = false;
 	bSeriousInjured = false;
 	bInteracting = false;
+	bCarried = false;
+	bHanged = false;
+	bTraped = false;
 }
 
 void USurvivorAnimInstance::NativeUpdateAnimation(float DeltaSeconds)

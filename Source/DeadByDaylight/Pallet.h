@@ -27,11 +27,10 @@ public:
 
 	virtual void Interact() override;
 
-	bool IsUsed() { return bUsed; }
-
 	virtual void KillerInteract() override;
-
 	virtual void KillerEndInteract() override;
+
+	bool IsUsed() { return bUsed; }
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Coponents", meta = (AllowPrivateAccess = "true"))
@@ -42,7 +41,6 @@ private:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Gameplay", meta = (AllowPrivateAccess = "true"))
 	float BrokenProgress;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Gameplay", meta = (AllowPrivateAccess = "true"))
 	float MaxBrokenProgress;
 

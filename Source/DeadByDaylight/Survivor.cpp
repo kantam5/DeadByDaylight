@@ -78,6 +78,7 @@ void ASurvivor::BeginPlay()
 	
 	WalkSpeed = Stat->GetWalkSpeed();
 	RunSpeed = Stat->GetRunSpeed();
+	CrawlSpeed = Stat->GetCrawlSpeed();
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
 	GetCharacterMovement()->SetCrouchedHalfHeight(200.0f);
@@ -159,14 +160,20 @@ void ASurvivor::MoveRight(float Value)
 
 void ASurvivor::StartRun()
 {
-	bRunning = true;
-	GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
+	if (Hp > 1)
+	{
+		bRunning = true;
+		GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
+	}
 }
 
 void ASurvivor::StopRun()
 {
-	bRunning = false;
-	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+	if (Hp > 1)
+	{
+		bRunning = false;
+		GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+	}
 }
 
 void ASurvivor::CrouchStart()
@@ -179,12 +186,25 @@ void ASurvivor::CrouchEnd()
 	UnCrouch();
 }
 
+void ASurvivor::RecoverHp()
+{
+	Hp++;
+	if (Hp > 1)
+	{
+		GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+	}
+}
+
 float ASurvivor::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	// Stat에서 Survivor의 상태를 변경
 	Stat->OnAttacked(DamageAmount);
 
 	Hp = Stat->GetHp();
+	if (Hp == 1)
+	{
+		GetCharacterMovement()->MaxWalkSpeed = CrawlSpeed;
+	}
 
 	return DamageAmount;
 }

@@ -59,13 +59,11 @@ void AHook::KillerInteract()
 {
 	if (HangProgress < MaxHangProgress && bHanging == false)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("HangProgress: %f"), HangProgress);
 		Super::KillerInteract();
 		HangProgress += FApp::GetDeltaTime() * 1.0f;
 	}
 	else if (bHanging != true)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Hang Survivor"));
 		HangProgress = 0.0f;
 		bHanging = true;
 

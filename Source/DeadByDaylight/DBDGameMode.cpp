@@ -31,6 +31,7 @@ void ADBDGameMode::RepairCompleted()
 	}
 }
 
+// 출구 스폰
 void ADBDGameMode::ActivateExitGenerator()
 {
 	FVector ExitDoorSpawnLocation_1 = ExitDoorSpawnPoints[ExitDoorSpawnPointIndex_1]->GetActorLocation();

@@ -42,12 +42,10 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Gameplay", meta = (AllowPrivateAccess = "true"))
 	float MaxUnlockProgress;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Gameplay", meta = (AllowPrivateAccess = "true"))
 	float UnlockProgress;
 
 	bool bTraping;
-
 	bool bUsed;
 
 	class ASurvivor* Survivor;

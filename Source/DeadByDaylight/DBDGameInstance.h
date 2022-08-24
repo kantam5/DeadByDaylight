@@ -22,6 +22,9 @@ struct FSurvivorData : public FTableRowBase
 	int32 RunSpeed;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 CrawlSpeed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 HangedCount;
 };
 

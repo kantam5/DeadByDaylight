@@ -68,7 +68,7 @@ public:
 	class USurvivorStatComponent* GetStat() { return Stat; }
 
 	int32 GetHp() { return Hp; }
-	void RecoverHp() { Hp++; }
+	void RecoverHp();
 
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
@@ -96,6 +96,8 @@ private:
 	float WalkSpeed;
 	UPROPERTY(EditAnywhere, Category = "Movement")
 	float RunSpeed;
+	UPROPERTY(EditAnywhere, Category = "Movement")
+	float CrawlSpeed;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Movement")
 	bool bRunning;

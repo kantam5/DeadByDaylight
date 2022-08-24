@@ -88,7 +88,7 @@ void APallet::KillerInteract()
 	}
 	else if (bBroken != true)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Broke"));
+		UE_LOG(LogTemp, Warning, TEXT("Broken"));
 		BrokenProgress = 0.0f;
 		bBroken = true;
 		Destroy();
