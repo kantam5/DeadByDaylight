@@ -11,10 +11,6 @@ class DEADBYDAYLIGHT_API AKiller : public ACharacter
 {
 	GENERATED_BODY()
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class UCameraComponent* Camera;
-
-
 public:
 	// Sets default values for this character's properties
 	AKiller();
@@ -37,8 +33,6 @@ protected:
 	void MoveRight(float Value);
 
 	void AttackAxis(float Value);
-
-	void Attack();
 	void LungeAttack();
 	void EndAttack();
 	void EndAttackMontage();
@@ -52,26 +46,42 @@ protected:
 
 	void Power(float Value);
 	void EndPower();
-	void PressPower();
-	void EndPressPowerMontage();
+	void PickUpTrap();
+	void EndPickUpTrapMontage();
 
+	void SetKillerInteractLocation(AActor* MinOverlappingActor);
 	void Interact(float Value);
 	void EndInteract();
 
+	void SetKillerActionInteractLocation(AActor* MinOverlappingActor);
 	void ActionInteract();
 	void EndVaultMontage();
 	void EndLiftMontage();
+
+	AActor* GetMinOverlappingActor();
 
 public:
 	void KnockOut();
 	void EndKnockOut();
 
+	void SetInteracting(bool state);
 	bool IsInteracting() { return bInteracting; }
+
+	void SetCarrying(bool state);
+	bool IsCarrying() { return bCarrying; }
+
+	void SetActionInteracting(bool state);
+	bool IsActionInteracting() { return bActionInteracting; }
+
+	void SetUsingPower(bool state);
 	bool IsUsingPower() { return bUsingPower; }
 
 private:
-	UPROPERTY(EditAnywhere, Category = "Movement")
-	float WalkSpeed;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	class UCameraComponent* Camera;
+
+	UPROPERTY()
+	class UKillerAnimInstance* KillerAnimInstance;
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<class AWeapon> WeaponClass;
@@ -82,6 +92,15 @@ private:
 	TSubclassOf<class ABearTrap> BearTrapClass;
 	UPROPERTY()
 	ABearTrap* BearTrap;
+
+	bool bCanAttack;
+	bool bHoldingAttack;
+	UPROPERTY(EditDefaultsOnly, Category = "Movement")
+	bool bAttackDelay;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Gameplay", meta = (AllowPrivateAccess = "true"))
+	float MaxHoldingAttackProgress;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Gameplay", meta = (AllowPrivateAccess = "true"))
+	float HoldingAttackProgress;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Gameplay", meta = (AllowPrivateAccess = "true"))
 	int32 MaxPowerCount;
@@ -91,37 +110,29 @@ private:
 	float PowerProgress;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Gameplay", meta = (AllowPrivateAccess = "true"))
 	float MaxPowerProgress;
+	
+	UPROPERTY(EditAnywhere, Category = "Movement")
+	float WalkSpeed;
+	UPROPERTY(EditAnywhere, Category = "Movement")
+	float AttackDelaySpeed;
+	UPROPERTY(EditAnywhere, Category = "Movement")
+	float CarryingWalkSpeed;
 
-	UPROPERTY()
-	class UKillerAnimInstance* KillerAnimInstance;
-
-	UPROPERTY(VisibleAnywhere, Category = "Pawn")
-	bool bAttacking = false;
-
+	UPROPERTY(VisibleAnywhere, Category = "Movement")
+	bool bAttacking;
 	UPROPERTY(EditDefaultsOnly, Category = "Movement")
-	bool bInteracting = false;
-
+	bool bInteracting;
 	UPROPERTY(EditDefaultsOnly, Category = "Movement")
-	bool bCarrying = false;
-
+	bool bCarrying;
 	UPROPERTY(EditDefaultsOnly, Category = "Movement")
-	bool bActionInteracting = false;
-
+	bool bActionInteracting;
 	UPROPERTY(EditDefaultsOnly, Category = "Movement")
-	bool bUsingPower = false;
+	bool bUsingPower;
 
-	UPROPERTY(VisibleAnywhere)
 	TArray<AActor*> OverlappingActors;
-
 	class AInteractiveActor* InteractingActor;
-
 	FVector WindowPalletInteractMoveLocation;
 
 	class ASurvivor* Survivor;
 
-	bool bCanAttack;
-
-	bool bHoldingAttack;
-
-	float HoldingAttack;
 };

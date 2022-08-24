@@ -44,7 +44,6 @@ protected:
 	void CrouchStart();
 	void CrouchEnd();
 
-	AActor* GetMinOverlappingActor();
 	void SetSurvivorInteractLocation(AActor* MinOverlappingActor);
 	void Interact(float Value);
 	void EndInteract();
@@ -52,6 +51,8 @@ protected:
 	void SetSurvivorActionInteractLocation(AActor* MinOverlappingActor);
 	void ActionInteract();
 	void EndActionInteractMontage();
+
+	AActor* GetMinOverlappingActor();
 
 protected:
 	// APawn interface

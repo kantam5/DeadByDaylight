@@ -28,14 +28,6 @@ void AHook::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (bHanging)
-	{
-		HangingSurvivor->GetStat()->IncreaseHangingTime();
-	}
-	else
-	{
-		HangingSurvivor = nullptr;
-	}
 }
 
 void AHook::Interact()
@@ -54,6 +46,7 @@ void AHook::Interact()
 		HangingSurvivor->SetActorEnableCollision(true);
 		HangingSurvivor->GetCharacterMovement()->GravityScale = 1.0f;
 		HangingSurvivor->SetHanged(false);
+		HangingSurvivor = nullptr;
 	}
 }
 

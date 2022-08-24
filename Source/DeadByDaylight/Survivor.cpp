@@ -246,11 +246,11 @@ void ASurvivor::Interact(float Value)
 	// Survivor와 Overlap된 Actor들 중에서 가장 가까운 Actors에 Interact
 	GetOverlappingActors(OverlappingActors);
 
-	if ((Controller != nullptr) && (Value != 0.0f) && !OverlappingActors.IsEmpty())
+	if ((Controller != nullptr) && (Value != 0.0f))
 	{
 		AActor* MinOverlappingActor = GetMinOverlappingActor();
 
-		// Generator, ExitDoor
+		// 발전기, 출구
 		if (MinOverlappingActor && (MinOverlappingActor->IsA(AGenerator::StaticClass()) || MinOverlappingActor->IsA(AExitDoor::StaticClass())) && Hp >= 2)
 		{
 			InteractingActor = Cast<AInteractiveActor>(MinOverlappingActor);
@@ -263,7 +263,7 @@ void ASurvivor::Interact(float Value)
 
 			bInteracting = true;
 		}
-		// Heal Survivor
+		// 생존자 치료
 		else if (MinOverlappingActor && MinOverlappingActor->IsA(ASurvivor::StaticClass()) && Hp >= 2)
 		{
 			ASurvivor* WoundedSurvivor = Cast<ASurvivor>(MinOverlappingActor);
@@ -280,7 +280,7 @@ void ASurvivor::Interact(float Value)
 				bInteracting = true;
 			}
 		}
-		// Hook
+		// 갈고리
 		else if (MinOverlappingActor && MinOverlappingActor->IsA(AHook::StaticClass()) && Hp >= 2)
 		{
 			InteractingActor = Cast<AInteractiveActor>(MinOverlappingActor);
@@ -297,7 +297,7 @@ void ASurvivor::Interact(float Value)
 				bInteracting = true;
 			}
 		}
-		// BearTrap
+		// 덫
 		else if (MinOverlappingActor && MinOverlappingActor->IsA(ABearTrap::StaticClass()))
 		{
 			ABearTrap* BearTrap = Cast<ABearTrap>(MinOverlappingActor);
@@ -348,7 +348,7 @@ void ASurvivor::EndInteract()
 void ASurvivor::ActionInteract()
 {
 	GetOverlappingActors(OverlappingActors);
-	if (Controller != nullptr && !OverlappingActors.IsEmpty())
+	if (Controller != nullptr)
 	{
 		AActor* MinOverlappingActor = GetMinOverlappingActor();
 
