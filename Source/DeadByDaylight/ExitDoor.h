@@ -30,6 +30,9 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Coponents", meta = (AllowPrivateAccess = "true"))
 	class USphereComponent* SphereCollision;
 
+	UPROPERTY(EditAnywhere, Category = "Coponents", meta = (AllowPrivateAccess = "true"))
+	USceneComponent* InteractCharacterLocation_0;
+
 	class ADBDGameMode* DBDGameMode;
 
 	float PowerProgress;

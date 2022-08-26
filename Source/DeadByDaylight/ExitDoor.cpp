@@ -18,6 +18,10 @@ AExitDoor::AExitDoor()
 	SphereCollision = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere Collision"));
 	SphereCollision->SetupAttachment(RootComponent);
 
+	InteractCharacterLocation_0 = CreateDefaultSubobject<USceneComponent>(TEXT("Interact Character Location 0"));
+	InteractCharacterLocations.Add(InteractCharacterLocation_0);
+	InteractCharacterLocation_0->SetupAttachment(RootComponent);
+
 	PowerProgress = 0.0f;
 	MaxPowerProgress = 2.0f;
 

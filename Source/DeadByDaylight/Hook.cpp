@@ -15,6 +15,10 @@ AHook::AHook()
 	SurvivorHookedLocation = CreateDefaultSubobject<USceneComponent>(TEXT("Survivor Hooked Location"));
 	SurvivorHookedLocation->SetupAttachment(RootComponent);
 
+	InteractCharacterLocation_0 = CreateDefaultSubobject<USceneComponent>(TEXT("Interact Character Location 0"));
+	InteractCharacterLocations.Add(InteractCharacterLocation_0);
+	InteractCharacterLocation_0->SetupAttachment(RootComponent);
+
 	SaveProgress = 0.0f;
 	MaxSaveProgress = 2.0f;
 

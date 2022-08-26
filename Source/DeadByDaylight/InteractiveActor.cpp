@@ -11,22 +11,6 @@ AInteractiveActor::AInteractiveActor()
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	RootComponent = Mesh;
-
-	InteractCharacterLocation_0 = CreateDefaultSubobject<USceneComponent>(TEXT("Interact Character Location 0"));
-	InteractCharacterLocations.Add(InteractCharacterLocation_0);
-	InteractCharacterLocation_0->SetupAttachment(RootComponent);
-
-	InteractCharacterLocation_1 = CreateDefaultSubobject<USceneComponent>(TEXT("Interact Character Location 1"));
-	InteractCharacterLocations.Add(InteractCharacterLocation_1);
-	InteractCharacterLocation_1->SetupAttachment(RootComponent);
-
-	InteractCharacterLocation_2 = CreateDefaultSubobject<USceneComponent>(TEXT("Interact Character Location 2"));
-	InteractCharacterLocations.Add(InteractCharacterLocation_2);
-	InteractCharacterLocation_2->SetupAttachment(RootComponent);
-
-	InteractCharacterLocation_3 = CreateDefaultSubobject<USceneComponent>(TEXT("Interact Character Location 3"));
-	InteractCharacterLocations.Add(InteractCharacterLocation_3);
-	InteractCharacterLocation_3->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned

@@ -35,18 +35,6 @@ public:
 
 	virtual bool IsBroken();
 
-	UPROPERTY(EditAnywhere, Category = "Coponents", meta = (AllowPrivateAccess = "true"))
-	USceneComponent* InteractCharacterLocation_0;
-
-	UPROPERTY(EditAnywhere, Category = "Coponents", meta = (AllowPrivateAccess = "true"))
-	USceneComponent* InteractCharacterLocation_1;
-
-	UPROPERTY(EditAnywhere, Category = "Coponents", meta = (AllowPrivateAccess = "true"))
-	USceneComponent* InteractCharacterLocation_2;
-
-	UPROPERTY(EditAnywhere, Category = "Coponents", meta = (AllowPrivateAccess = "true"))
-	USceneComponent* InteractCharacterLocation_3;
-
 	TArray<USceneComponent*> InteractCharacterLocations;
 
 	bool bBroken;

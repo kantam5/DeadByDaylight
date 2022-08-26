@@ -21,4 +21,9 @@ public:
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Coponents", meta = (AllowPrivateAccess = "true"))
 	class UBoxComponent* BoxCollision;
+
+	UPROPERTY(EditAnywhere, Category = "Coponents", meta = (AllowPrivateAccess = "true"))
+	USceneComponent* InteractCharacterLocation_0;
+	UPROPERTY(EditAnywhere, Category = "Coponents", meta = (AllowPrivateAccess = "true"))
+	USceneComponent* InteractCharacterLocation_1;
 };
