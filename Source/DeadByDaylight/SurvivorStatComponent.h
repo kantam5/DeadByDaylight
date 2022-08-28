@@ -43,6 +43,8 @@ public:
 	int32 IncreaseHangedCount();
 
 	void SpawnBloodDecalActor();
+	void PauseBloodTimerHandle();
+	void UnPauseBloodTimerHandle();
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = Stat, Meta = (AllowPrivateAccess = true))

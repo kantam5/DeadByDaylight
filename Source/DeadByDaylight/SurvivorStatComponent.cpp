@@ -44,7 +44,7 @@ void USurvivorStatComponent::BeginPlay()
 	SetMaxHp(Hp);
 
 	GetWorld()->GetTimerManager().SetTimer(BloodTimerHandle, this, &USurvivorStatComponent::SpawnBloodDecalActor, BloodRate, true, BloodRate);
-	GetWorld()->GetTimerManager().PauseTimer(BloodTimerHandle);
+	PauseBloodTimerHandle();
 }
 
 void USurvivorStatComponent::InitializeComponent()
@@ -61,6 +61,18 @@ void USurvivorStatComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	if (Survivor->IsHanged())
 	{
 		IncreaseHangingTime();
+	}
+	if (Hp < 3)
+	{
+		float SurvivorSpeed = Survivor->GetVelocity().Size();
+		if (SurvivorSpeed > 0.0f)
+		{
+			UnPauseBloodTimerHandle();
+		}
+		else if (SurvivorSpeed == 0.0f)
+		{
+			PauseBloodTimerHandle();
+		}
 	}
 }
 
@@ -83,8 +95,6 @@ void USurvivorStatComponent::SetMaxHp(int32 MaxHp)
 
 void USurvivorStatComponent::OnAttacked(float DamageAmount)
 {
-	GetWorld()->GetTimerManager().UnPauseTimer(BloodTimerHandle);
-
 	Hp -= DamageAmount;
 	if (Hp <= 1)
 	{
@@ -117,7 +127,7 @@ void USurvivorStatComponent::Recover()
 
 		if (Hp == 3)
 		{
-			GetWorld()->GetTimerManager().PauseTimer(BloodTimerHandle);
+			PauseBloodTimerHandle();
 		}
 
 		ASurvivor* Owner = Cast<ASurvivor>(GetOwner());
@@ -169,4 +179,14 @@ void USurvivorStatComponent::SpawnBloodDecalActor()
 		BloodDecal->SetLifeSpan(3.5f);
 		BloodDecal->GetDecal()->DecalSize = FVector(120.0f, 120.0f, 120.0f);
 	}
+}
+
+void USurvivorStatComponent::PauseBloodTimerHandle()
+{
+	GetWorld()->GetTimerManager().PauseTimer(BloodTimerHandle);
+}
+
+void USurvivorStatComponent::UnPauseBloodTimerHandle()
+{
+	GetWorld()->GetTimerManager().UnPauseTimer(BloodTimerHandle);
 }
