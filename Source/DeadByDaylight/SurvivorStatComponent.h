@@ -42,6 +42,8 @@ public:
 
 	int32 IncreaseHangedCount();
 
+	void SpawnBloodDecalActor();
+
 private:
 	UPROPERTY(VisibleAnywhere, Category = Stat, Meta = (AllowPrivateAccess = true))
 	int32 Hp;
@@ -66,6 +68,13 @@ private:
 	float MaxHangingTime;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Stat, meta = (AllowPrivateAccess = "true"))
 	float HangingTime;
+
+	FTimerHandle BloodTimerHandle;
+	float BloodRate;
+	// 새로 파서 size를 tick에서 처리
+	class ADecalActor* BloodDecal;
+	UPROPERTY(EditAnywhere, Category = Decal, meta = (AllowPrivateAccess = "true"))
+	UMaterialInterface* BloodDecalMaterial;
 
 	class ASurvivor* Survivor;
 };

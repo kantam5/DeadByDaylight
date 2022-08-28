@@ -4,6 +4,9 @@
 #include "SurvivorStatComponent.h"
 #include "DBDGameInstance.h"
 #include "Kismet/GameplayStatics.h"
+#include "Engine/DecalActor.h"
+#include "Components/DecalComponent.h"
+#include "TimerManager.h"
 #include "Survivor.h"
 
 // Sets default values for this component's properties
@@ -22,6 +25,8 @@ USurvivorStatComponent::USurvivorStatComponent()
 
 	MaxHangingTime = 5.0f;
 	HangingTime = 0.0f;
+
+	BloodRate = 1.0f;
 }
 
 
@@ -37,6 +42,9 @@ void USurvivorStatComponent::BeginPlay()
 
 	// ...
 	SetMaxHp(Hp);
+
+	GetWorld()->GetTimerManager().SetTimer(BloodTimerHandle, this, &USurvivorStatComponent::SpawnBloodDecalActor, BloodRate, true, BloodRate);
+	GetWorld()->GetTimerManager().PauseTimer(BloodTimerHandle);
 }
 
 void USurvivorStatComponent::InitializeComponent()
@@ -49,15 +57,6 @@ void USurvivorStatComponent::InitializeComponent()
 void USurvivorStatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	if (Hp < 3)
-	{
-		bRecovered = false;
-	}
-	else if (Hp >= 3)
-	{
-		bRecovered = true;
-	}
 
 	if (Survivor->IsHanged())
 	{
@@ -84,6 +83,8 @@ void USurvivorStatComponent::SetMaxHp(int32 MaxHp)
 
 void USurvivorStatComponent::OnAttacked(float DamageAmount)
 {
+	GetWorld()->GetTimerManager().UnPauseTimer(BloodTimerHandle);
+
 	Hp -= DamageAmount;
 	if (Hp <= 1)
 	{
@@ -95,10 +96,9 @@ void USurvivorStatComponent::OnAttacked(float DamageAmount)
 
 void USurvivorStatComponent::OnTrapped()
 {
-	Hp -= 1;
-	if (Hp <= 2)
+	if (Hp > 2)
 	{
-		Hp = 2;
+		OnAttacked(1);
 	}
 
 	UE_LOG(LogTemp, Warning, TEXT("OnTrapped %d"), Hp);
@@ -110,10 +110,15 @@ void USurvivorStatComponent::Recover()
 	{
 		RecoverProgress += FApp::GetDeltaTime() * 1.0f;
 	}
-	else if (bRecovered != true)
+	else if (Hp < 3)
 	{
 		Hp++;
 		RecoverProgress = 0.0f;
+
+		if (Hp == 3)
+		{
+			GetWorld()->GetTimerManager().PauseTimer(BloodTimerHandle);
+		}
 
 		ASurvivor* Owner = Cast<ASurvivor>(GetOwner());
 		Owner->RecoverHp();
@@ -151,4 +156,17 @@ int32 USurvivorStatComponent::IncreaseHangedCount()
 	}
 
 	return HangedCount;
+}
+
+void USurvivorStatComponent::SpawnBloodDecalActor()
+{
+	FVector DecalSpawnLocation = FVector(Survivor->GetActorLocation().X, Survivor->GetActorLocation().Y, 0.0f);
+	FRotator DecalSpawnRotation = FRotator(0.0f, 0.0f, Survivor->GetActorRotation().Yaw);
+	BloodDecal = GetWorld()->SpawnActor<ADecalActor>(DecalSpawnLocation, DecalSpawnRotation);
+	if (BloodDecal != nullptr)
+	{
+		BloodDecal->SetDecalMaterial(BloodDecalMaterial);
+		BloodDecal->SetLifeSpan(3.5f);
+		BloodDecal->GetDecal()->DecalSize = FVector(120.0f, 120.0f, 120.0f);
+	}
 }
