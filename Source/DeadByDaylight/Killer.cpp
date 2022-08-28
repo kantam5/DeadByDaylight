@@ -86,8 +86,6 @@ void AKiller::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
-	UE_LOG(LogTemp, Warning, TEXT("Speed: %f"), GetCharacterMovement()->MaxWalkSpeed);
-
 	if (IsActionInteracting())
 	{
 		GetController()->SetIgnoreLookInput(true);
@@ -458,7 +456,6 @@ void AKiller::EndInteract()
 	}
 
 	SetInteracting(false);
-	UE_LOG(LogTemp, Warning, TEXT("EndInteract %d"), bInteracting);
 }
 
 
@@ -480,7 +477,6 @@ void AKiller::ActionInteract()
 	// 생존자를 들고 있을 때 내려놓기
 	if (Controller != nullptr && Survivor && Survivor->IsCarried() && !bHook && bAttackDelay == false)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("off survivor"));
 		Survivor->SetActorEnableCollision(true);
 		Survivor->SetCarried(false);
 		Survivor->GetCharacterMovement()->GravityScale = 1.0f;

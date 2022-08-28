@@ -240,6 +240,8 @@ void ASurvivor::SetHanged(bool state)
 	}
 	else if (state == false)
 	{
+		Stat->ResetHangingTime();
+
 		GetController()->ResetIgnoreInputFlags();
 	}
 }
@@ -288,7 +290,7 @@ void ASurvivor::Interact(float Value)
 		{
 			ASurvivor* WoundedSurvivor = Cast<ASurvivor>(MinOverlappingActor);
 
-			if (WoundedSurvivor->Stat->GetHp() <= 2)
+			if (WoundedSurvivor->Stat->GetHp() <= 2 && !WoundedSurvivor->IsHanged())
 			{
 				WoundedSurvivor->Stat->Recover();
 

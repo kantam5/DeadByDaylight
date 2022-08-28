@@ -20,7 +20,7 @@ AHook::AHook()
 	InteractCharacterLocation_0->SetupAttachment(RootComponent);
 
 	SaveProgress = 0.0f;
-	MaxSaveProgress = 2.0f;
+	MaxSaveProgress = 1.5f;
 
 	HangProgress = 0.0f;
 	MaxHangProgress = 1.5f;

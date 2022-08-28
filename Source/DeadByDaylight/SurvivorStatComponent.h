@@ -38,6 +38,7 @@ public:
 	void Recover();
 
 	void IncreaseHangingTime();
+	void ResetHangingTime() { HangingTime = 0.0f; };
 
 	int32 IncreaseHangedCount();
 
@@ -66,4 +67,5 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Stat, meta = (AllowPrivateAccess = "true"))
 	float HangingTime;
 
+	class ASurvivor* Survivor;
 };

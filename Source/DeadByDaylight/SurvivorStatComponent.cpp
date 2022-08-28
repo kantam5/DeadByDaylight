@@ -20,7 +20,7 @@ USurvivorStatComponent::USurvivorStatComponent()
 	MaxRecoverProgress = 2.0f;
 	RecoverProgress = 0.0f;
 
-	MaxHangingTime = 30.0f;
+	MaxHangingTime = 5.0f;
 	HangingTime = 0.0f;
 }
 
@@ -43,6 +43,7 @@ void USurvivorStatComponent::InitializeComponent()
 {
 	Super::InitializeComponent();
 
+	Survivor = Cast<ASurvivor>(GetOwner());
 }
 
 void USurvivorStatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -56,6 +57,11 @@ void USurvivorStatComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	else if (Hp >= 3)
 	{
 		bRecovered = true;
+	}
+
+	if (Survivor->IsHanged())
+	{
+		IncreaseHangingTime();
 	}
 }
 
@@ -131,12 +137,16 @@ void USurvivorStatComponent::IncreaseHangingTime()
 int32 USurvivorStatComponent::IncreaseHangedCount()
 {
 	HangedCount++;
+
+	UE_LOG(LogTemp, Warning, TEXT("Hanged Count is %d"), HangedCount);
+
 	if (HangedCount >= 3)
 	{
 		HangedCount = 3;
 		Hp = 0;
-		// 생존자 삭제하고 return
-		// ui도 실행
+
+		Survivor->Destroy();
+		
 		return HangedCount;
 	}
 
