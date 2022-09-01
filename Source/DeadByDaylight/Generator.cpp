@@ -42,6 +42,7 @@ AGenerator::AGenerator()
 
 	bRepaired = false;
 	bBroken = false;
+
 }
 
 // Called when the game starts or when spawned
