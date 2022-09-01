@@ -4,16 +4,17 @@
 #include "Killer.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Components/SpotLightComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "Weapon.h"
 #include "KillerAnimInstance.h"
 #include "InteractiveActor.h"
 #include "Generator.h"
 #include "Pallet.h"
 #include "Window.h"
-#include "Components/CapsuleComponent.h"
 #include "Survivor.h"
 #include "Hook.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "Misc/App.h"
 #include "BearTrap.h"
 
@@ -23,6 +24,10 @@ AKiller::AKiller()
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->bUsePawnControlRotation = true;
+
+	EyeLight = CreateDefaultSubobject<USpotLightComponent>(TEXT("Eye Light"));
+	EyeLight->SetIntensity(5000.0f);
+	EyeLight->SetLightColor(FLinearColor::Red);
 
 	WalkSpeed = 1400.0f;
 	AttackDelaySpeed = 400.0f;
@@ -53,6 +58,7 @@ void AKiller::BeginPlay()
 	
 	// 생성자에서 호출 시 Head에 달리지 않음
 	Camera->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, "Head");
+	EyeLight->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, "Head");
 	
 	Weapon = GetWorld()->SpawnActor<AWeapon>(WeaponClass);
 	if (Weapon)

@@ -79,6 +79,8 @@ public:
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* Camera;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = light, meta = (AllowPrivateAccess = "true"))
+	class USpotLightComponent* EyeLight;
 
 	UPROPERTY()
 	class UKillerAnimInstance* KillerAnimInstance;
