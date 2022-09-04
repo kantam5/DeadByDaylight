@@ -137,4 +137,5 @@ private:
 
 	class ASurvivor* Survivor;
 
+	class ADBDGameMode* DBDGameMode;
 };

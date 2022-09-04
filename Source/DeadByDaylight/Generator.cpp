@@ -5,6 +5,7 @@
 #include "Components/SphereComponent.h"
 #include "Components/BoxComponent.h"
 #include "Survivor.h"
+#include "Killer.h"
 #include "Misc/App.h"
 #include "DBDGameMode.h"
 #include "Kismet/GameplayStatics.h"
@@ -55,6 +56,11 @@ void AGenerator::BeginPlay()
 
 	// SphereCollision->OnComponentBeginOverlap.AddDynamic(this, &AGenerator::HandleOverlap);
 	// SphereCollision->OnComponentEndOverlap.AddDynamic(this, &AGenerator::HandleEndOverlap);
+
+	if (UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->IsA(AKiller::StaticClass()))
+	{
+		Mesh->SetRenderCustomDepth(true);
+	}
 }
 
 // Called every frame

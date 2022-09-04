@@ -7,6 +7,7 @@
 #include "Components/SpotLightComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Kismet/GameplayStatics.h"
 #include "Weapon.h"
 #include "KillerAnimInstance.h"
 #include "InteractiveActor.h"
@@ -17,6 +18,7 @@
 #include "Hook.h"
 #include "Misc/App.h"
 #include "BearTrap.h"
+#include "DBDGameMode.h"
 
 AKiller::AKiller()
 {
@@ -55,6 +57,8 @@ AKiller::AKiller()
 void AKiller::BeginPlay()
 {
 	Super::BeginPlay();
+
+	DBDGameMode = Cast<ADBDGameMode>(UGameplayStatics::GetGameMode(this));
 	
 	// 생성자에서 호출 시 Head에 달리지 않음
 	Camera->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, "Head");
@@ -360,6 +364,9 @@ void AKiller::SetInteracting(bool state)
 
 void AKiller::SetCarrying(bool state)
 {
+	// Set hook custom depth render
+	DBDGameMode->SetHookRenderCustomDepth(state);
+
 	bCarrying = state;
 	if (state == true)
 	{

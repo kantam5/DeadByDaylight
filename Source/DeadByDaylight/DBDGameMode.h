@@ -17,9 +17,13 @@ class DEADBYDAYLIGHT_API ADBDGameMode : public AGameModeBase
 public:
 	virtual void BeginPlay() override;
 
+	void SetHookRenderCustomDepth(bool state);
+	
 	void RepairCompleted();
 
 	void ActivateExitGenerator();
+
+	void GameOver(bool bWonGame);
 
 private:
 	int RemainGenerator;
@@ -36,7 +40,4 @@ private:
 	TSubclassOf<UUserWidget> SurviveWidget;
 
 	UUserWidget* SurviveScreen;
-
-public:
-	void GameOver(bool bWonGame);
 };

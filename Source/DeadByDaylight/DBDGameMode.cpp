@@ -3,6 +3,7 @@
 
 #include "DBDGameMode.h"
 #include "ExitDoor.h"
+#include "Hook.h"
 #include "Engine/TargetPoint.h"
 #include "Kismet/GameplayStatics.h"
 #include "Math/UnrealMathUtility.h"
@@ -18,6 +19,20 @@ void ADBDGameMode::BeginPlay()
 
 	ExitDoorSpawnPointIndex_1 = FMath::RandRange(0, 1);
 	ExitDoorSpawnPointIndex_2 = FMath::RandRange(2, 3);
+}
+
+void ADBDGameMode::SetHookRenderCustomDepth(bool state)
+{
+	TArray<AActor*> Hooks;
+
+	UGameplayStatics::GetAllActorsOfClass(this, AHook::StaticClass(), Hooks);
+
+	for (AActor* Hook : Hooks)
+	{
+		AHook* CastedHook = Cast<AHook>(Hook);
+		
+		CastedHook->Mesh->SetRenderCustomDepth(state);
+	}
 }
 
 void ADBDGameMode::RepairCompleted()
